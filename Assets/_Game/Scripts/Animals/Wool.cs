@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(SkinnedMeshRenderer))]
     [RequireComponent(typeof(MeshCollider))]

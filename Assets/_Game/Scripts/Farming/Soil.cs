@@ -1,9 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(MeshRenderer))]
     public class Soil : MonoBehaviour
@@ -261,6 +261,9 @@ namespace CryingSnow.FarmingIsland
             // Return the crop to the object pool and add it to the target's inventory (farmer NPC or player).
             PoolManager.Instance.ReturnObject(crop.gameObject);
             target.GetComponent<Inventory>().AddItem(farm.CropData.ItemId);
+
+            if (target.CompareTag("Player"))
+                GameplayEvents.RaiseCropHarvested(1);
         }
     }
 }

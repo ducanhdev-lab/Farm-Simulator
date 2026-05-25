@@ -1,10 +1,10 @@
-﻿namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [System.Serializable]
     public class Item
     {
-        public string ItemId { get; private set; }
-        public int Amount { get; set; }
+        public string ItemId;
+        public int Amount;
 
         public ItemData Data => ItemDatabase.GetItemDataById(ItemId);
 

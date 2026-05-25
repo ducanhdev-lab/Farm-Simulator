@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class ProductInfo : MonoBehaviour

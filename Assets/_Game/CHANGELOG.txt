@@ -18,7 +18,7 @@ Version 1.0.2
 Changes:
 - Upgraded NavMeshComponents to use Unity's AI Navigation system, increasing the Unity version requirement to 2022.3.53f1.
 - Changed haptic feedback using Unity's Handheld.Vibrate, fixing gameplay issues on some Android devices (e.g., shaking tree, fishing, collecting eggs).
-- Added Save File Manager in Unity Editor (Tools > Farming Island > Save File Manager).
+- Added Save File Manager in Unity Editor (Tools > Island Harvest > Save File Manager).
 - Minor performance improvements.
 
 Version 1.0.1

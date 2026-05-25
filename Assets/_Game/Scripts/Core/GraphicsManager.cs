@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class GraphicsManager : MonoBehaviour
     {

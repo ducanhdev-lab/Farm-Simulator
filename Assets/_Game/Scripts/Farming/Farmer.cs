@@ -1,9 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(NavMeshAgent), typeof(Animator), typeof(AudioSource))]
     public class Farmer : MonoBehaviour

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class AnimalUpgradeSlot : MonoBehaviour
     {

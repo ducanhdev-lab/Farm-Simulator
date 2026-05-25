@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public static class EnumerableExtensions
     {

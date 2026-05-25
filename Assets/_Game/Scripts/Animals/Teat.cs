@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(SkinnedMeshRenderer))]
     public class Teat : MonoBehaviour

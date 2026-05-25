@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class Minimap : MonoBehaviour
     {

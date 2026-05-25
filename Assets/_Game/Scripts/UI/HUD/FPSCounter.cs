@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class FPSCounter : MonoBehaviour
@@ -24,17 +24,19 @@ namespace CryingSnow.FarmingIsland
             UpdateDisplay();
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         void Update()
         {
-            // Calculate the time between frames using an exponential moving average.
             deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-
-            // Calculate FPS by inverting deltaTime.
             float fps = 1.0f / deltaTime;
-
-            // Update the on-screen FPS display.
             UpdateDisplay(fps);
         }
+#else
+        void Start()
+        {
+            gameObject.SetActive(false);
+        }
+#endif
 
         /// <summary>
         /// Updates the displayed FPS value. If no value is provided, it shows default text.

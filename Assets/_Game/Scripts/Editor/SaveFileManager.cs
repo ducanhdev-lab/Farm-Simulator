@@ -1,15 +1,16 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class SaveFileManager : EditorWindow
     {
         private string saveFilesDirectory;
         private FileInfo[] saveFiles;
 
-        [MenuItem("Tools/Farming Island/Save File Manager")]
+        [MenuItem("Tools/Island Harvest/Save File Manager")]
         public static void ShowWindow()
         {
             GetWindow<SaveFileManager>("Save File Manager");
@@ -25,7 +26,9 @@ namespace CryingSnow.FarmingIsland
         {
             if (Directory.Exists(saveFilesDirectory))
             {
-                saveFiles = new DirectoryInfo(saveFilesDirectory).GetFiles("*.dat");
+                var jsonFiles = new DirectoryInfo(saveFilesDirectory).GetFiles("*.json");
+                var datFiles = new DirectoryInfo(saveFilesDirectory).GetFiles("*.dat");
+                saveFiles = jsonFiles.Concat(datFiles).ToArray();
             }
             else
             {

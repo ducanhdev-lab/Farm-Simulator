@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Cinemachine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class DairyAnimal : Animal
     {

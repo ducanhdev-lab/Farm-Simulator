@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class Purchaser : MonoBehaviour
     {

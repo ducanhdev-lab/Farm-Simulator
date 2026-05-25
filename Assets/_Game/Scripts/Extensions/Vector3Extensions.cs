@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public static class Vector3Extensions
     {

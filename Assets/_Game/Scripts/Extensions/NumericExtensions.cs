@@ -1,4 +1,4 @@
-﻿namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public static class NumericExtensions
     {

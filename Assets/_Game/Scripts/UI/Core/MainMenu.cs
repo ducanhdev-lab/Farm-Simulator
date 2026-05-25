@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class MainMenu : MonoBehaviour
     {

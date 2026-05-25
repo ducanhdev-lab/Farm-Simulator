@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [CustomPropertyDrawer(typeof(AudioData))]
     public class AudioDataDrawer : PropertyDrawer

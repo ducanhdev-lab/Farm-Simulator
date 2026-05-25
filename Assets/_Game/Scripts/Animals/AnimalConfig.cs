@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public enum AnimalType
     {

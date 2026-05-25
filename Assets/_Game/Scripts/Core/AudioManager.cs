@@ -1,11 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class AudioManager : MonoBehaviour
     {

@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
-  productName: Farming Island - Hyper Casual Farming Simulator
+  companyName: IslandHarvest Studio
+  productName: Island Harvest
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -143,7 +143,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.2.0
+  bundleVersion: 2.0.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -166,8 +166,8 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.CryingSnow.FarmingIsland
-    Standalone: com.CryingSnow.FarmingIsland
+    Android: com.islandharvest.game
+    Standalone: com.islandharvest.game
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -877,14 +877,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 2
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Farming Island - Hyper Casual Farming Simulator
+  metroPackageName: Island Harvest
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Farming Island - Hyper Casual Farming Simulator
+  metroApplicationDescription: Island Harvest - Mobile Farming Simulator
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -960,7 +960,7 @@ PlayerSettings:
   cloudProjectId: fbcde0a0-4604-429f-8395-f3a64d101cfb
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Farming Island - Hyper Casual Farming Simulator
+  projectName: Island Harvest
   organizationId: unity_78fff0bdd0cefb3f1be7
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

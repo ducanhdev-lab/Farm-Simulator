@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Cinemachine;
 using DG.Tweening;
 using System.Collections;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class Dock : MonoBehaviour, IProp
     {

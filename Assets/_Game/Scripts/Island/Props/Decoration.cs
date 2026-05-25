@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class Decoration : MonoBehaviour, IProp
     {

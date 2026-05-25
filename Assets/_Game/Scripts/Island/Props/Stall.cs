@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class Stall : MonoBehaviour, IProp
     {
@@ -92,6 +92,7 @@ namespace CryingSnow.FarmingIsland
 
             // Get the list of items in the inventory that are accepted by the stall.
             var validItems = inventory.Items.Where(i => acceptedItems.Contains(i.Data)).ToList();
+            int coinsEarnedThisSale = 0;
 
             while (validItems.Count > 0 && elapsedTime < maxPurchaseTime)
             {
@@ -104,8 +105,9 @@ namespace CryingSnow.FarmingIsland
                 int deductionAmount = Mathf.Max(1, Mathf.RoundToInt((item.Amount * (1 - timeRatio)) / remainingTime));
                 int actualDeduction = Mathf.Min(deductionAmount, item.Amount);
 
-                // Increase the player's coin count and update the inventory.
-                IslandManager.Instance.Coin += actualDeduction * item.Data.Price;
+                int saleValue = actualDeduction * item.Data.Price;
+                coinsEarnedThisSale += saleValue;
+                IslandManager.Instance.Coin += saleValue;
                 inventory.SubtractItem(item.ItemId, actualDeduction);
 
                 // Refresh the list of valid items after each sale.
@@ -124,6 +126,9 @@ namespace CryingSnow.FarmingIsland
 
                 elapsedTime += Time.deltaTime; // Increment the elapsed time.
             }
+
+            if (coinsEarnedThisSale > 0)
+                GameplayEvents.RaiseCoinsEarnedAtStall(coinsEarnedThisSale);
         }
 
         /// <summary>

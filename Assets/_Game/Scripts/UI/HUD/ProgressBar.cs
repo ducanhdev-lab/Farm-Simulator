@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TMPro;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class ProgressBar : MonoBehaviour
     {

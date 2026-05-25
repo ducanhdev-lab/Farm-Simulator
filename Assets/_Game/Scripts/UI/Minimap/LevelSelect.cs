@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class LevelSelect : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
     {

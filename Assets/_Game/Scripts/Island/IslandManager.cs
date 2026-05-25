@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using Unity.AI.Navigation;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     public class IslandManager : MonoBehaviour
     {
@@ -134,6 +134,12 @@ namespace CryingSnow.FarmingIsland
             RequestNavMeshUpdate();
 
             AudioManager.Instance.PlayBGM(themeSong);
+
+            var questManager = GetComponent<QuestManager>() ?? gameObject.AddComponent<QuestManager>();
+            questManager.Initialize(data);
+
+            if (GetComponent<QuestHUD>() == null)
+                gameObject.AddComponent<QuestHUD>();
         }
 
         private void OnDisable()
@@ -458,16 +464,6 @@ namespace CryingSnow.FarmingIsland
         private int CalculateIslandPrice(int islandIndex)
         {
             return Mathf.RoundToInt(Mathf.Round(baseUnlockPrice * Mathf.Pow(unlockGrowthFactor, islandIndex)) / 5f) * 5;
-        }
-
-        private void Update()
-        {
-            if (SimpleInput.GetButtonDown("One Million Coins"))
-            {
-                Coin += 1000000;
-                AudioManager.Instance.PlaySFX(AudioID.Cash);
-                Debug.Log("TESTING: Added 1M Coins. REMOVE ON BUILD!");
-            }
         }
 
 #if UNITY_EDITOR

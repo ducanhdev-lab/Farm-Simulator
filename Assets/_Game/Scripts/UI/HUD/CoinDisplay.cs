@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class CoinDisplay : MonoBehaviour

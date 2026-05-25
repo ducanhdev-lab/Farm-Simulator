@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
-namespace CryingSnow.FarmingIsland
+namespace IslandHarvest.Game
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class Island : MonoBehaviour
@@ -143,6 +143,7 @@ namespace CryingSnow.FarmingIsland
                 {
                     IsUnlocked = true;
                     OnActivated?.Invoke();
+                    GameplayEvents.RaiseIslandUnlocked();
                     StartCoroutine(InitializeProps(false));
                 });
         }
