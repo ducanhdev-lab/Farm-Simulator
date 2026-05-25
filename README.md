@@ -1,28 +1,23 @@
-# Island Harvest
+# Farming Island
 
-**3D mobile farming simulator** — island expansion, automation, **daily quests**.
-
-Unity 6 · URP · Android / iOS
+**3D hyper-casual farming simulator** — mobile-first, island expansion, idle automation.
 
 ---
 
 ## 1. Đây là game gì?
 
-Khám phá đảo, trồng trọt, chăn nuôi, câu cá, bán hàng kiếm coin, mở khóa đảo mới, hoàn thành **nhiệm vụ ngày** để nhận thưởng, rồi qua 3 level.
+Người chơi khám phá các đảo, trồng trọt, chăn nuôi, câu cá, thu hoạch và bán hàng để kiếm coin, mở khóa đảo mới, nâng cấp silo / farmer / barn, rồi qua 3 level.
 
-**Core loop:** farm → harvest → sell → daily quest → mở đảo → automate
+**Core loop:** farm → thu hoạch → bán → mở đảo → automate → next level.
 
 ---
 
 ## 2. Bạn làm gì?
 
-- **Rebrand:** `Island Harvest`, namespace `IslandHarvest.Game`, bundle `com.islandharvest.game`
-- **Daily Quest system** (mới): ScriptableObject quests, `QuestManager`, runtime HUD, save trong `GameData`
-- **Save migration:** Binary `.dat` → JSON `.json` + `saveVersion` + legacy import
-- **Gameplay hooks:** `GameplayEvents` cho harvest / stall / unlock island
-- **Mobile:** pooling, URP render scale, spatial island grid, touch + haptics
-
-*Base project evolved from a licensed Unity farming template — see [CREDITS.md](CREDITS.md).*
+- **Gameplay systems:** crop farming (plant / water / harvest), silo + auto farmer (NavMesh), island unlock, inventory & economy, stall / merchant, fruit tree, barn (poultry / dairy / fiber), fishing minigame, level progression.
+- **Mobile production:** touch joystick, haptics, settings (SFX / BGM / vibration / shadows / render scale), portrait-friendly UI, 60 FPS target.
+- **Architecture & data:** ScriptableObject-driven items / crops / animals; per-level binary save; manager-based scene flow (island, UI, audio, graphics, pool).
+- **Performance pass:** object pooling, island spatial grid, batched NavMesh rebuild, URP render-scale tuning.
 
 ---
 
@@ -30,61 +25,15 @@ Khám phá đảo, trồng trọt, chăn nuôi, câu cá, bán hàng kiếm coin
 
 | Area | Detail |
 |------|--------|
-| **Daily quests** | Data-driven `QuestData`, event-driven progress, UTC daily reset |
-| **Save** | `JsonUtility` + version field; auto-migrate old `.dat` saves |
-| **Pooling** | Crops, fruit, stall, coins — `PoolManager` |
-| **Island expansion** | `Vector3Int` spatial grid, incremental mesh refresh |
-| **Mobile graphics** | URP render scale, shadow toggle, 60 FPS target |
+| **Pooling** | Crops, fruit drops, stall items, coin VFX — `PoolManager` + DOTween capacity preset |
+| **Island expansion** | `Dictionary<Vector3Int, Island>` spatial grid + incremental mesh refresh — tránh CPU spike trên map lớn |
+| **Automation** | NavMesh farmers chạy farm loop; delayed NavMesh update khi spawn prop hàng loạt |
+| **Mobile graphics** | URP render scale 0.5–1.0, shadow toggle, Metal/iOS water fix, sprite atlas |
+| **Data-driven** | 34+ items, crop / animal configs tách khỏi logic — dễ balance & mở rộng content |
+| **Save** | Per-scene `.dat` binary save + Editor tool (`Tools → Farming Island → Save File Manager`) |
 
 **Stack:** Unity 6000.3 · URP 17 · Cinemachine · AI Navigation 2 · DOTween · SimpleInput
-
-```mermaid
-flowchart LR
-  harvest[Harvest crop] --> events[GameplayEvents]
-  stall[Sell at stall] --> events
-  unlock[Unlock island] --> events
-  events --> quest[QuestManager]
-  quest --> hud[QuestHUD]
-  quest --> save[GameData JSON]
-```
 
 ---
 
 ## 4. Có playable / video không?
-
-| | |
-|---|---|
-| **Playable** | Build APK — hướng dẫn [BUILD.md](BUILD.md). Hoặc clone repo → Unity **6000.3.10f1** → Play `_MainMenu`. |
-| **Video** | *(Thêm link YouTube gameplay 60–90s)* |
-| **itch.io** | *(Thêm link sau khi upload APK)* |
-
----
-
-## Development scope
-
-| Implemented by project owner | From template / third-party |
-|------------------------------|----------------------------|
-| Rebrand, namespace, bundle ID | Core farming / island / animal loops |
-| `QuestManager`, `QuestHUD`, `GameplayEvents` | URP assets, animations, level layout |
-| JSON save + migration | DOTween, SimpleInput, TMP |
-| README, CREDITS, BUILD docs | Original 3D art/audio (until replaced) |
-
----
-
-## Chạy nhanh
-
-```
-Unity 6000.3.10f1
-Tools → Island Harvest → Create Default Quest Assets   (first time)
-Open Assets/_Game/Scenes/_MainMenu.unity → Play
-```
-
-**Scenes:** `_MainMenu` · `Level01` · `Level02` · `Level03`
-
-**Editor:** `Tools → Island Harvest → Save File Manager`
-
----
-
-## Credits
-
-[CREDITS.md](CREDITS.md) · [Third-Party Notices](Assets/_Game/Third-Party%20Notices.txt)
