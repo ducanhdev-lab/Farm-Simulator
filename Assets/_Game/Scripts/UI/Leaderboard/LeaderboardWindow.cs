@@ -89,7 +89,10 @@ namespace IslandHarvest.Game
                 var entry = entries[i];
                 ConfigureRowLayout(rows[i]);
                 string label = FormatEntryLabel(entry);
-                bool isLocal = !string.IsNullOrEmpty(localPlayerId) && entry.playerId == localPlayerId;
+                bool isLocal =
+                    !string.IsNullOrEmpty(localPlayerId)
+                    && !string.IsNullOrEmpty(entry.playerId)
+                    && string.Equals(entry.playerId, localPlayerId, System.StringComparison.OrdinalIgnoreCase);
                 rows[i].text = $"#{entry.rank}  {label}  —  {entry.coins:N0}{(isLocal ? " ★" : "")}";
                 rows[i].color = isLocal ? new Color(0.55f, 0.9f, 1f) : Color.white;
 

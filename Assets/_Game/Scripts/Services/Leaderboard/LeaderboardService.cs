@@ -65,7 +65,8 @@ namespace IslandHarvest.Game
 
             foreach (var entry in serverEntries)
             {
-                if (entry.playerId == playerId)
+                if (!string.IsNullOrEmpty(entry.playerId) &&
+                    string.Equals(entry.playerId, playerId, StringComparison.OrdinalIgnoreCase))
                     return serverEntries;
             }
 
