@@ -34,6 +34,10 @@ namespace IslandHarvest.Game
         private bool isSyncing;
         private bool startupMergeDone;
 
+        public ApiClient ApiClient => apiClient;
+        public string ApiBaseUrl => apiBaseUrl;
+        public string PlayerId => PlayerPrefs.GetString(PrefPlayerId, string.Empty);
+
         public static void EnsureInstance()
         {
             if (Instance != null)
@@ -92,6 +96,8 @@ namespace IslandHarvest.Game
 
             if (mergeOnStartup && !startupMergeDone)
                 yield return MergeFromCloudOnStartup();
+
+            yield return LiveEventsService.RefreshFromServer();
         }
 
         private void OnDestroy()
@@ -103,7 +109,13 @@ namespace IslandHarvest.Game
         private void HandleProfileSaved(PlayerProfile profile)
         {
             if (syncOnSave && !isSyncing)
-                StartCoroutine(SyncProfileToCloud(profile));
+                StartCoroutine(SyncProfileAndSnapshot(profile));
+        }
+
+        private IEnumerator SyncProfileAndSnapshot(PlayerProfile profile)
+        {
+            yield return SyncProfileToCloud(profile);
+            yield return IslandSnapshotService.UploadSnapshot(profile);
         }
 
         public IEnumerator AuthenticateGuest()

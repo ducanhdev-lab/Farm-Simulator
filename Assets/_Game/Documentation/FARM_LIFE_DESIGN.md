@@ -1,7 +1,47 @@
 # Farm Life — Sơ đồ thiết kế (Target: Project hoàn chỉnh)
 
 Tài liệu mô tả **kiến trúc đích** khi Farm Life hoàn thành toàn bộ roadmap (Phase 1–5).  
-Chú thích: **✅ đã có** | **🔶 một phần** | **⬜ kế hoạch**
+Chú thích: **✅ hoàn thành** | **🔶 đang làm / một phần** | **⬜ chưa làm**
+
+_Cập nhật tiến độ: 2026-05._
+
+---
+
+## Bảng tiến độ tổng hợp
+
+| Hạng mục | Trạng thái | Ghi chú |
+|----------|------------|---------|
+| **Phase 1** — Profile, services, cloud save | ✅ | `PlayerProfile`, `GameServices`, merge 409, JWT persist |
+| **Phase 2** — Leaderboard + anti-cheat | 🔶 | API + Main Menu + **in-game RANK**; delta coin + rate-limit save |
+| **Phase 3** — Live events + remote config | 🔶 | `GET /events/active` từ DB `live_events` (seed); chưa admin UI |
+| **Phase 4** — Island snapshot / visit | 🔶 | API + visit text UI; chưa visit 3D / async load đảo |
+| **Phase 5** — Trade, guild, chat | ⬜ | Socket.IO optional |
+| **TycoonCore** — Economy, recipe, building | 🔶 | `RecipeData`, `ProcessingStation`, 2 recipe mẫu; cần thêm content |
+| **TycoonCore** — Biome trên Home map | 🔶 | `BiomeZone`, `BiomeManager`, coin gates; cần gán zone trên map + art |
+| **TycoonCore** — UI modular + inventory | 🔶 | `HudController`, `InventoryWindow`; polish qua Editor menu |
+| **Automation NPC** — Worker / conveyor | ⬜ | Chỉ `Farmer` per silo |
+| **Presentation** — Leaderboard meta UI | 🔶 | Main Menu + **Level01 UIManager**; Editor: Setup In-Game Leaderboard |
+| **Analytics / Ads / Pass** | ⬜ | `DebugAnalyticsService` stub only |
+| **Addressables / biome scenes** | ⬜ | Event scenes Level02/03 trong build |
+| **Performance** — Pool, NavMesh batch | ✅ | Có sẵn từ Island Harvest |
+| **Performance** — Chunk / GPU instancing | ⬜ | |
+
+### Đang làm (ưu tiên tiếp theo)
+
+1. Chạy Editor: **Tools → Island Harvest → Setup Farm Life (All)** (gồm in-game leaderboard trên UIManager prefab).
+2. Bổ sung recipe/building content + gán `BiomeZone` trên Level01 theo vùng map (art/vùng thực tế).
+3. Phase 2: UI conflict save 409, leaderboard polish (refresh row, avatar).
+4. Phase 3: admin API/UI chỉnh `live_events` (starts_at / ends_at) — DB đã có, chưa CMS.
+
+### Chưa làm (theo roadmap dài hạn)
+
+- `WorkerAgent`, conveyor, NPC schedule
+- `INavMeshWorldService` tách khỏi `IslandManager`
+- Achievement system subscriber
+- Redis cache, rate limit middleware
+- Marketplace, guild, realtime (Phase 5)
+- Addressables biome scenes, scene streaming
+- Rewarded ads, Premium Pass, analytics SDK production
 
 ---
 
@@ -106,7 +146,20 @@ flowchart TB
 | Presentation | HUD, windows, juice | 🔶 |
 | Infrastructure | IO, network, pooling, events | 🔶 |
 
-_Ghi chú triển khai gần nhất: `ProfileMerger`, cloud 409/startup sync, `WorldExpansionService`, `BuildingData`, `BiomeId`, `IAnalyticsService` stub._
+| Thành phần Domain / Services | Trạng thái |
+|-----------------------------|------------|
+| `PlayerProfile`, `EventInstanceData`, migration | ✅ |
+| `RecipeData`, `BuildingData`, `BiomeId`, `BiomeProgressionConfig` | ✅ |
+| `IslandSnapshotData` | ✅ |
+| `Wallet`, `SaveCoordinator`, `EconomyService`, `PlayerProfileService` | ✅ |
+| `WorldExpansionService`, `BiomeProgressionService` | ✅ |
+| `EventTravelService`, `EventWorldRegistry` + live events merge | 🔶 |
+| `CloudSaveService`, `ProfileMerger`, `ApiClient` | ✅ |
+| `ApiRemoteConfigService` | 🔶 |
+| `LeaderboardService`, `LiveEventsService`, `IslandSnapshotService` | ✅ |
+| `DebugAnalyticsService` + `AnalyticsEventBridge` | 🔶 |
+| `INavMeshWorldService` | ⬜ |
+| `IAnalyticsService` → SDK thật | ⬜ |
 
 ---
 
@@ -176,7 +229,7 @@ flowchart TB
     EventCoast --> EI
 ```
 
-### Biome progression (logical trên Home — ⬜ Phase 2+)
+### Biome progression (logical trên Home — 🔶 code có, map content chưa đủ)
 
 ```mermaid
 flowchart LR
@@ -299,6 +352,7 @@ stateDiagram-v2
 | Thành phần | Vai trò | Trạng thái |
 |------------|---------|-----------|
 | `Farmer` (NavMesh) | Auto farm loop per silo | ✅ |
+| `ProcessingStation` + `RecipeData` | Chế biến tại Home | 🔶 |
 | `WorkerAgent` + `WorkOrder` | Generic worker pool | ⬜ |
 | Conveyor / machines | Industrial biome | ⬜ |
 | NPC schedule + state machine | Merchants, customers | ⬜ |
@@ -337,6 +391,13 @@ flowchart LR
     Bus --> ACH
 ```
 
+| Subscriber | Trạng thái |
+|------------|------------|
+| `QuestManager` | ✅ |
+| `CoinDisplay` / HUD (gián tiếp) | ✅ |
+| `DebugAnalyticsService` | 🔶 |
+| `AchievementSystem` | ⬜ |
+
 ---
 
 ## 9. Luồng Save & Cloud (Offline-first)
@@ -360,11 +421,19 @@ sequenceDiagram
     CS->>API: PUT /player/save
     alt version conflict
         API-->>CS: 409
-        CS-->>G: merge / prompt user
+        CS-->>G: merge auto
     else success
         API-->>CS: 200 ok
     end
 ```
+
+| Bước save/cloud | Trạng thái |
+|-----------------|------------|
+| Local `player_profile.json` | ✅ |
+| `PUT /player/save` + JWT | ✅ |
+| Merge 409 / startup cloud newer | ✅ |
+| Prompt UI khi conflict | ⬜ |
+| Upload snapshot sau save | ✅ |
 
 ---
 
@@ -403,10 +472,23 @@ flowchart TB
 | Phase | API / Feature | Trạng thái |
 |-------|----------------|-----------|
 | 1 | Guest auth, profile, cloud save | ✅ |
-| 2 | Leaderboard + anti-cheat validation | ⬜ |
-| 3 | Live events, remote balancing | ⬜ |
-| 4 | Async island visit / snapshot | ⬜ |
+| 2 | Leaderboard + anti-cheat validation | 🔶 |
+| 3 | Live events, remote balancing | 🔶 |
+| 4 | Async island visit / snapshot | 🔶 |
 | 5 | Realtime trade, guild, chat | ⬜ |
+
+| Endpoint / tính năng server | Trạng thái |
+|-----------------------------|------------|
+| `GET /`, `GET /health` | ✅ |
+| `POST /auth/guest` | ✅ |
+| `GET/PUT /player/profile`, `/player/save` | ✅ |
+| Validate coin / saveVersion on save | ✅ |
+| `GET /leaderboard/coins` + auto upsert từ save | ✅ |
+| `GET /config/balance` | ✅ |
+| `GET /events/active` (PostgreSQL `live_events`) | 🔶 |
+| `PUT/GET /island/snapshot` | 🔶 |
+| JWT rate limit (save), Redis | 🔶 |
+| `/marketplace` | ⬜ |
 
 ---
 
@@ -432,13 +514,24 @@ flowchart TB
     subgraph meta [Meta Screens]
         MainMenu[MainMenu - Home / Events / Shop]
         Shop[GameShopWindow - Skins IAP]
-        LeaderboardUI[Leaderboard - future]
+        LeaderboardUI[LeaderboardWindow]
+        VisitUI[IslandVisitWindow]
     end
 
     UIRoot[UIManager] --> hud
     UIRoot --> stack
     MainMenu --> meta
 ```
+
+| UI | Trạng thái |
+|----|------------|
+| `UIManager` + HUD gameplay (coin, items, joystick) | ✅ |
+| `SettingsWindow`, Silo/Barn/Merchant panels | ✅ |
+| `GameShopWindow` (Main Menu) | ✅ |
+| `HudController`, `PanelStack`, `InventoryWindow` | 🔶 |
+| `LeaderboardWindow`, `IslandVisitWindow` (Main Menu) | 🔶 |
+| Leaderboard in-game (Level01) | 🔶 |
+| `QuestHUD` | ✅ |
 
 **Style hướng:** bright, cozy, mobile-first (Dreamdale / Family Farm Adventure).
 
@@ -494,16 +587,18 @@ gantt
     section Foundation
         PlayerProfile Services EventBus     :done, 2025-01, 2025-02
         Backend scaffold CloudSave          :done, 2025-02, 2025-03
-        TycoonCore biomes buildings         :active, 2025-03, 2025-05
     section TycoonCore
-        Economy recipes buildings biomes    :2025-03, 2025-05
-        UI polish inventory automation      :2025-04, 2025-06
-    section Polish
-        VFX juice analytics docs            :2025-06, 2025-07
+        Economy recipes buildings           :active, 2025-03, 2025-05
+        Biome zones map content             :active, 2025-03, 2025-05
+        UI polish inventory modular         :active, 2025-04, 2025-06
     section BackendLive
-        Leaderboard live events visits      :2025-07, 2025-09
+        Leaderboard anti-cheat              :active, 2025-05, 2025-07
+        Live events remote config           :active, 2025-05, 2025-07
+        Island snapshot visit               :active, 2025-05, 2025-08
+    section Polish
+        VFX juice analytics SDK             :2025-06, 2025-08
     section Optional
-        Realtime multiplayer                :2025-09, 2025-11
+        Realtime multiplayer Phase5         :2025-09, 2025-11
 ```
 
 ---
@@ -518,8 +613,20 @@ gantt
 
 ---
 
+## 16. Checklist file / menu Editor
+
+| Việc | Trạng thái |
+|------|------------|
+| `Tools → Island Harvest → Setup Farm Life (All)` | 🔶 cần chạy trên máy dev |
+| `Setup Main Menu Leaderboard` | 🔶 |
+| `Setup In-Game Leaderboard (UIManager)` | 🔶 |
+| `Setup Biome Zones (Level01)` | 🔶 |
+| `Polish Inventory Window` | 🔶 |
+| `server`: `docker compose up -d postgres` + `npm run dev` | 🔶 môi trường dev |
+
+---
+
 ## Tài liệu liên quan
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — trạng thái implementation hiện tại
+- [ARCHITECTURE.md](ARCHITECTURE.md) — API & client online features (ngắn gọn)
 - [server/README.md](../../server/README.md) — API & Docker
-- Master plan — `.cursor/plans/farm_life_refactor_*.plan.md`

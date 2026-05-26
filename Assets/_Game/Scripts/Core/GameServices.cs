@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,8 +22,11 @@ namespace IslandHarvest.Game
         [SerializeField] private int startingMoney = 500;
         [SerializeField] private int baseUnlockPrice = 100;
         [SerializeField] private float unlockGrowthFactor = 1.1f;
+        [SerializeField] private bool fetchRemoteConfig = true;
 
         private WalletService walletImpl;
+        private ApiRemoteConfigService apiRemoteConfig;
+        private LocalRemoteConfigService localRemoteConfig;
 
         private void Awake()
         {
@@ -41,6 +45,8 @@ namespace IslandHarvest.Game
             string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             Profile.InitializeForScene(sceneName, startingMoney, defaultUnlockedIslands);
             walletImpl.Bind(Profile.ActiveWorldData);
+
+            EnsureBiomeManager();
         }
 
         private void Bootstrap()
@@ -52,15 +58,47 @@ namespace IslandHarvest.Game
             Wallet = walletImpl;
 
             Save = new SaveCoordinator(Profile);
-            RemoteConfig = new LocalRemoteConfigService();
-            World = new WorldExpansionService(
-                RemoteConfig.GetIslandBasePrice(baseUnlockPrice),
-                unlockGrowthFactor);
+            localRemoteConfig = new LocalRemoteConfigService();
+            apiRemoteConfig = new ApiRemoteConfigService(localRemoteConfig, baseUnlockPrice);
+            RemoteConfig = apiRemoteConfig;
+            World = new WorldExpansionService(baseUnlockPrice, unlockGrowthFactor);
             Economy = new EconomyService(Wallet, RemoteConfig);
             Analytics = new DebugAnalyticsService();
             AnalyticsEventBridge.Bind(Analytics);
 
             CloudSaveService.EnsureInstance();
+
+            if (fetchRemoteConfig)
+                StartCoroutine(InitializeRemoteConfig());
+        }
+
+        private IEnumerator InitializeRemoteConfig()
+        {
+            while (CloudSaveService.Instance == null)
+                yield return null;
+
+            yield return CloudSaveService.Instance.StartCoroutine(CloudSaveService.Instance.AuthenticateGuest());
+
+            var client = CloudSaveService.Instance.ApiClient;
+            if (client == null)
+                yield break;
+
+            yield return apiRemoteConfig.FetchFromApi(client);
+
+            World = new WorldExpansionService(RemoteConfig.GetIslandBasePrice(baseUnlockPrice), unlockGrowthFactor);
+            Economy = new EconomyService(Wallet, RemoteConfig);
+        }
+
+        private static void EnsureBiomeManager()
+        {
+            if (Object.FindFirstObjectByType<BiomeManager>() != null)
+                return;
+
+            var islandManager = IslandManager.Instance;
+            if (islandManager == null)
+                return;
+
+            islandManager.gameObject.AddComponent<BiomeManager>();
         }
 
         private void OnDestroy() => AnalyticsEventBridge.Unbind();

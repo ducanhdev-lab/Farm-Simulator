@@ -9,9 +9,12 @@ namespace IslandHarvest.Game
     public class InventoryWindow : WindowBase
     {
         [SerializeField] private Button toggleButton;
+        [SerializeField] private Button closeButton;
         [SerializeField] private Transform gridContainer;
         [SerializeField] private ItemInfo itemSlotPrefab;
         [SerializeField] private TMP_Dropdown categoryFilter;
+        [SerializeField] private TMP_Text summaryLabel;
+        [SerializeField] private TMP_Text emptyStateLabel;
 
         private readonly List<ItemInfo> slots = new List<ItemInfo>();
         private Inventory boundInventory;
@@ -24,6 +27,9 @@ namespace IslandHarvest.Game
 
             if (toggleButton != null)
                 toggleButton.onClick.AddListener(Toggle);
+
+            if (closeButton != null)
+                closeButton.onClick.AddListener(Hide);
 
             if (categoryFilter != null)
             {
@@ -72,9 +78,26 @@ namespace IslandHarvest.Game
             if (boundInventory == null || itemSlotPrefab == null || gridContainer == null)
                 return;
 
-            var items = boundInventory.Items;
+            var items = boundInventory.Items
+                .Where(i => i.Data != null)
+                .OrderBy(i => i.Data.Category)
+                .ThenBy(i => i.Data.ItemId)
+                .ToList();
+
             if (filterCategory.HasValue)
-                items = items.Where(i => i.Data != null && i.Data.Category == filterCategory.Value).ToList();
+                items = items.Where(i => i.Data.Category == filterCategory.Value).ToList();
+
+            int totalStacks = items.Count;
+            int totalAmount = items.Sum(i => i.Amount);
+
+            if (summaryLabel != null)
+                summaryLabel.text = $"{totalStacks} types · {totalAmount} items";
+
+            if (emptyStateLabel != null)
+                emptyStateLabel.gameObject.SetActive(items.Count == 0);
+
+            if (gridContainer != null)
+                gridContainer.gameObject.SetActive(items.Count > 0);
 
             while (slots.Count > items.Count)
             {

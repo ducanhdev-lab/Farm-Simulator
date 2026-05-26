@@ -1,48 +1,34 @@
 # Farm Life Architecture
 
-Implementation status (updated with TycoonCore foundation).
-
 ## Layers
 
-- **Domain** — `PlayerProfile`, `EventWorldConfig`, `RecipeData`, `BuildingData`, `BiomeId`
-- **Services** — `PlayerProfileService`, `WalletService`, `SaveCoordinator`, `EconomyService`, `WorldExpansionService`, `EventTravelService`, `LocalRemoteConfigService`, `DebugAnalyticsService`
-- **Infrastructure** — `SaveSystem`, `ProfileMigration`, `ProfileMerger`, `GameEventBus`, `AnalyticsEventBridge`, `ApiClient`, `CloudSaveService`
-- **Gameplay** — `IslandManager`, `Farm`, `ProcessingStation` (scene presenters)
-- **Presentation** — `UIManager`, `HudController`, `PanelStack`, `InventoryWindow`
+- **Domain** — Profile, recipes, buildings, biomes, snapshots, live event DTOs
+- **Services** — Profile, wallet, economy, world, remote config, leaderboard, live events, snapshots
+- **Infrastructure** — Save, cloud, API client, event bus
+- **Gameplay** — Island, biomes, processing, travel
+- **Presentation** — HUD, inventory, shop, **leaderboard**, island visit
 
-## Save flow
+## Online features
 
-1. `IslandManager` collects world state into `GameData` (home) or event instance.
-2. `SaveCoordinator` notifies collectors, then `PlayerProfileService.SaveNow()`.
-3. Writes `player_profile.json` (+ legacy per-scene JSON for compatibility).
-4. `CloudSaveService` PUTs to `/player/save` when online.
-5. On **409 conflict** or **startup**: `ProfileMerger` merges by `saveVersion` / `lastSaveUtc`, saves local, retries upload.
+| Feature | Client | API |
+|---------|--------|-----|
+| Cloud save | `CloudSaveService` | `PUT /player/save` |
+| Remote balance | `ApiRemoteConfigService` | `GET /config/balance` |
+| Live events | `LiveEventsService` → `EventWorldRegistry` | `GET /events/active` |
+| Leaderboard | `LeaderboardWindow` (Main Menu + Level01 HUD **RANK**) | `GET /leaderboard/coins` |
+| Island visit | `IslandVisitWindow` | `GET /island/snapshot/:playerId` |
+| Snapshot upload | `IslandSnapshotService` | `PUT /island/snapshot` (after save) |
 
-## Scenes
+## Editor setup
 
-| Scene | Role |
-|-------|------|
-| `Level01` | Home Island (persistent progression) |
-| `Level02` | Snow event map |
-| `Level03` | Coast event map |
+**Tools → Island Harvest → Setup Farm Life (All)** — processing, biomes, UI, inventory, **Main Menu + in-game leaderboard**
 
-Main menu always loads Home Island.
+Or **Setup In-Game Leaderboard (UIManager)** / **Setup Main Menu Leaderboard** individually.
 
-## Event bus
+## Server
 
-`GameEventBus` forwards to legacy `GameplayEvents` where needed. `QuestManager` subscribes only to `GameEventBus`. `AnalyticsEventBridge` forwards bus events to `IAnalyticsService`.
+See [server/README.md](../../server/README.md). Restart `npm run dev` after pulling new routes.
 
-## Cloud save (Phase 1)
+## Related
 
-- Guest JWT persisted in `PlayerPrefs`
-- Startup merge when cloud profile is newer
-- Offline-first: local remains playable without server
-
-## Biomes (Phase 2 prep)
-
-`GameData.unlockedBiomeIds` tracks logical biomes (`BiomeId` enum). Default: `Starter` unlocked.
-
-## Related docs
-
-- [FARM_LIFE_DESIGN.md](FARM_LIFE_DESIGN.md) — target architecture & roadmap
-- [server/README.md](../../server/README.md) — API & Docker
+- [FARM_LIFE_DESIGN.md](FARM_LIFE_DESIGN.md)

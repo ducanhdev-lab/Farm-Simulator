@@ -9,15 +9,43 @@ namespace IslandHarvest.Game
 
         public static IReadOnlyList<EventWorldConfig> GetAll()
         {
-            if (cached != null)
-                return cached;
+            if (cached == null)
+                ReloadFromResources();
 
+            return cached;
+        }
+
+        public static void ApplyLiveEvents(LiveEventData[] events)
+        {
+            if (events == null || events.Length == 0)
+                return;
+
+            cached ??= new List<EventWorldConfig>();
+            cached.Clear();
+
+            foreach (var live in events)
+            {
+                if (live == null || string.IsNullOrEmpty(live.eventId))
+                    continue;
+
+                var config = ScriptableObject.CreateInstance<EventWorldConfig>();
+                config.name = live.displayName;
+                config.ConfigureRuntime(
+                    live.eventId,
+                    live.sceneName,
+                    live.displayName,
+                    live.alwaysAvailable,
+                    live.requiredHomeCoins);
+                cached.Add(config);
+            }
+        }
+
+        public static void ReloadFromResources()
+        {
             cached = new List<EventWorldConfig>(Resources.LoadAll<EventWorldConfig>("EventWorlds"));
 
             if (cached.Count == 0)
                 cached.AddRange(CreateDefaultConfigs());
-
-            return cached;
         }
 
         private static IEnumerable<EventWorldConfig> CreateDefaultConfigs()

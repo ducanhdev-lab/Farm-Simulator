@@ -1360,6 +1360,54 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7983c8ed4da04c046882739f0bc8ea77, type: 3}
+--- !u!1 &153092994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 153092995}
+  - component: {fileID: 153092996}
+  m_Layer: 0
+  m_Name: Biome_FishingCoast
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &153092995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153092994}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 473834702}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &153092996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153092994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e9eba1454572c48a0f6a69e8068cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IslandHarvest.Game.BiomeZone
+  biome: 1
+  gatedRoots:
+  - {fileID: 1446492705}
+  hideWhenLocked: 1
 --- !u!1001 &153906875
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2880,6 +2928,54 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 477e534a880486b45b9eae1fbd611ef9, type: 3}
+--- !u!1 &268326728
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 268326729}
+  - component: {fileID: 268326730}
+  m_Layer: 0
+  m_Name: Biome_Starter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &268326729
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268326728}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 43.5, y: 0, z: -22.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1661435392}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &268326730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268326728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e9eba1454572c48a0f6a69e8068cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IslandHarvest.Game.BiomeZone
+  biome: 0
+  gatedRoots:
+  - {fileID: 1013468542}
+  hideWhenLocked: 1
 --- !u!1001 &275909806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4461,6 +4557,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1465239344}
+    - targetCorrespondingSourceObject: {fileID: 5658434931092471509, guid: 0dad17f685b06494dae6e622586b081c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 153092995}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dad17f685b06494dae6e622586b081c, type: 3}
 --- !u!114 &473834701 stripped
@@ -10300,6 +10400,86 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1013044396}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1013468540
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1661435392}
+    m_Modifications:
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 43.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -22.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4204949939503913122, guid: 6008f5ea558f06248a1fec32bb343de9,
+        type: 3}
+      propertyPath: m_Name
+      value: StarterProcessor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6008f5ea558f06248a1fec32bb343de9, type: 3}
+--- !u!4 &1013468541 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1133578484534740491, guid: 6008f5ea558f06248a1fec32bb343de9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1013468540}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1013468542 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4204949939503913122, guid: 6008f5ea558f06248a1fec32bb343de9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1013468540}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1019850253 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3962633797554170470, guid: 9720358fc564f6048ae791c23b7d1707,
@@ -13650,6 +13830,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e5d4b780c0e2d1549829f794b84c5b50, type: 3}
+--- !u!1 &1446492705 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3324230604543029116, guid: e5d4b780c0e2d1549829f794b84c5b50,
+    type: 3}
+  m_PrefabInstance: {fileID: 1446492704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1460117341 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6422242983710268605, guid: ec77cd05771fc244ab30236958430ea5,
@@ -15021,6 +15207,8 @@ Transform:
   - {fileID: 358345822}
   - {fileID: 156893932}
   - {fileID: 86843005}
+  - {fileID: 1013468541}
+  - {fileID: 268326729}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1661435393

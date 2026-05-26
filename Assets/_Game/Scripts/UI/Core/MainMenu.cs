@@ -22,6 +22,10 @@ namespace IslandHarvest.Game
         [SerializeField] private Button shopButton;
         [SerializeField] private GameShopWindow shopWindow;
 
+        [Header("Leaderboard")]
+        [SerializeField] private Button leaderboardButton;
+        [SerializeField] private LeaderboardWindow leaderboardWindow;
+
         private void Awake()
         {
             // Hide the start button until the fade effect is complete
@@ -46,7 +50,41 @@ namespace IslandHarvest.Game
             AudioManager.Instance.PlayBGM(titleSong);
 
             IAPService.EnsureInstance();
+            CloudSaveService.EnsureInstance();
             InitializeShopButton();
+            InitializeLeaderboardButton();
+            StartCoroutine(BootstrapOnlineServices());
+        }
+
+        private IEnumerator BootstrapOnlineServices()
+        {
+            if (CloudSaveService.Instance == null)
+                yield break;
+
+            yield return CloudSaveService.Instance.StartCoroutine(CloudSaveService.Instance.AuthenticateGuest());
+            yield return LiveEventsService.RefreshFromServer();
+        }
+
+        private void InitializeLeaderboardButton()
+        {
+            if (leaderboardButton == null)
+                leaderboardButton = GameObject.Find("LeaderboardButton")?.GetComponent<Button>();
+
+            if (leaderboardWindow == null)
+                leaderboardWindow = FindFirstObjectByType<LeaderboardWindow>(FindObjectsInactive.Include);
+
+            if (leaderboardWindow != null)
+                leaderboardWindow.Hide();
+
+            if (leaderboardButton == null || leaderboardWindow == null)
+                return;
+
+            leaderboardButton.onClick.RemoveAllListeners();
+            leaderboardButton.onClick.AddListener(() =>
+            {
+                leaderboardWindow.Show();
+                AudioManager.Instance.PlaySFX(AudioID.UI_Accept);
+            });
         }
 
         private void InitializeShopButton()

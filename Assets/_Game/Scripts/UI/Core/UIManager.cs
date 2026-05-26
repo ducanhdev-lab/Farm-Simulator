@@ -16,6 +16,11 @@ namespace IslandHarvest.Game
         [SerializeField] private PanelStack panelStack;
         [SerializeField] private InventoryWindow inventoryWindow;
 
+        [Header("Meta (in-game)")]
+        [SerializeField] private LeaderboardWindow leaderboardWindow;
+        [SerializeField] private IslandVisitWindow islandVisitWindow;
+        [SerializeField] private Button leaderboardButton;
+
         [SerializeField, Tooltip("The virtual joystick used for movement input.")]
         private Joystick joystick;
 
@@ -115,11 +120,15 @@ namespace IslandHarvest.Game
         void OnEnable()
         {
             minimapButton.onClick.AddListener(() => minimap.Show());
+            WireLeaderboardButton();
         }
 
         void OnDisable()
         {
             minimapButton.onClick.RemoveAllListeners();
+
+            if (leaderboardButton != null)
+                leaderboardButton.onClick.RemoveAllListeners();
         }
 
         public IEnumerator FadeInScreen()
@@ -142,6 +151,32 @@ namespace IslandHarvest.Game
                 panelStack = GetComponentInChildren<PanelStack>(true);
             if (inventoryWindow == null)
                 inventoryWindow = GetComponentInChildren<InventoryWindow>(true);
+            if (leaderboardWindow == null)
+                leaderboardWindow = GetComponentInChildren<LeaderboardWindow>(true);
+            if (islandVisitWindow == null)
+                islandVisitWindow = GetComponentInChildren<IslandVisitWindow>(true);
+            if (leaderboardButton == null)
+                leaderboardButton = transform.Find("LeaderboardButton")?.GetComponent<Button>();
+        }
+
+        private void WireLeaderboardButton()
+        {
+            if (leaderboardButton == null)
+                return;
+
+            leaderboardButton.onClick.RemoveAllListeners();
+            leaderboardButton.onClick.AddListener(ShowLeaderboard);
+        }
+
+        public void ShowLeaderboard()
+        {
+            if (leaderboardWindow == null)
+                return;
+
+            if (panelStack != null)
+                panelStack.Show(leaderboardWindow);
+            else
+                leaderboardWindow.Show();
         }
 
         public void BindPlayerInventory(Inventory inventory)

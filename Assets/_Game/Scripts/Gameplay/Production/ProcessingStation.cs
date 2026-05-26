@@ -32,10 +32,26 @@ namespace IslandHarvest.Game
             if (isProcessing || recipe == null || !other.CompareTag("Player"))
                 return;
 
+            if (!IsBiomeAccessible())
+                return;
+
             if (!HasIngredients(inputInventory ?? other.GetComponent<PlayerController>()?.Inventory))
                 return;
 
             StartCoroutine(ProcessRoutine(other.GetComponent<PlayerController>()?.Inventory));
+        }
+
+        private bool IsBiomeAccessible()
+        {
+            if (building == null)
+                return true;
+
+            var world = GameServices.Instance?.World;
+            var data = GameServices.Instance?.Profile?.ActiveWorldData;
+            if (world == null || data == null)
+                return true;
+
+            return world.IsBiomeUnlocked(data, building.RequiredBiome);
         }
 
         private bool HasIngredients(Inventory source)
