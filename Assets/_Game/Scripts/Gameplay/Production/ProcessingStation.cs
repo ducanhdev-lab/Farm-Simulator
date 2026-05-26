@@ -8,12 +8,19 @@ namespace IslandHarvest.Game
     /// </summary>
     public class ProcessingStation : MonoBehaviour
     {
+        [SerializeField] private BuildingData building;
         [SerializeField] private RecipeData recipe;
         [SerializeField] private Inventory inputInventory;
         [SerializeField] private Inventory outputInventory;
         [SerializeField] private Transform processIndicator;
 
         private bool isProcessing;
+
+        private void Awake()
+        {
+            if (recipe == null && building != null)
+                recipe = building.DefaultRecipe;
+        }
 
         private void Reset()
         {

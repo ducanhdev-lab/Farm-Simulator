@@ -97,6 +97,9 @@ namespace IslandHarvest.Game
             if (profile.homeWorld.completedIAPProductIds == null)
                 profile.homeWorld.completedIAPProductIds = new List<string>();
 
+            if (profile.homeWorld.unlockedBiomeIds == null || profile.homeWorld.unlockedBiomeIds.Count == 0)
+                profile.homeWorld.unlockedBiomeIds = new List<string> { BiomeId.Starter.ToString() };
+
             SyncCosmeticsToHomeWorld(profile);
         }
 

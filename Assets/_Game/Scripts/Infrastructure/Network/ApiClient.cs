@@ -11,9 +11,18 @@ namespace IslandHarvest.Game
         public string BaseUrl { get; set; } = "http://localhost:3000";
         public string AuthToken { get; set; }
 
-        public IEnumerator PostJson(string path, string jsonBody, Action<string> onSuccess, Action<string> onError)
+        public IEnumerator PostJson(string path, string jsonBody, Action<ApiResult> onComplete) =>
+            SendJson(UnityWebRequest.kHttpVerbPOST, path, jsonBody, onComplete);
+
+        public IEnumerator PutJson(string path, string jsonBody, Action<ApiResult> onComplete) =>
+            SendJson(UnityWebRequest.kHttpVerbPUT, path, jsonBody, onComplete);
+
+        public IEnumerator Get(string path, Action<ApiResult> onComplete) =>
+            SendGet(path, onComplete);
+
+        private IEnumerator SendJson(string method, string path, string jsonBody, Action<ApiResult> onComplete)
         {
-            using var request = new UnityWebRequest($"{BaseUrl}{path}", "POST");
+            using var request = new UnityWebRequest($"{BaseUrl}{path}", method);
             byte[] body = Encoding.UTF8.GetBytes(jsonBody ?? "{}");
             request.uploadHandler = new UploadHandlerRaw(body);
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -22,40 +31,25 @@ namespace IslandHarvest.Game
 
             yield return request.SendWebRequest();
 
+            long status = request.responseCode;
             if (request.result == UnityWebRequest.Result.Success)
-                onSuccess?.Invoke(request.downloadHandler.text);
+                onComplete?.Invoke(ApiResult.Ok(status, request.downloadHandler.text));
             else
-                onError?.Invoke(request.error);
+                onComplete?.Invoke(ApiResult.Fail(status, request.error));
         }
 
-        public IEnumerator PutJson(string path, string jsonBody, Action<string> onSuccess, Action<string> onError)
-        {
-            using var request = new UnityWebRequest($"{BaseUrl}{path}", "PUT");
-            byte[] body = Encoding.UTF8.GetBytes(jsonBody ?? "{}");
-            request.uploadHandler = new UploadHandlerRaw(body);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            ApplyAuth(request);
-
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-                onSuccess?.Invoke(request.downloadHandler.text);
-            else
-                onError?.Invoke(request.error);
-        }
-
-        public IEnumerator Get(string path, Action<string> onSuccess, Action<string> onError)
+        private IEnumerator SendGet(string path, Action<ApiResult> onComplete)
         {
             using var request = UnityWebRequest.Get($"{BaseUrl}{path}");
             ApplyAuth(request);
 
             yield return request.SendWebRequest();
 
+            long status = request.responseCode;
             if (request.result == UnityWebRequest.Result.Success)
-                onSuccess?.Invoke(request.downloadHandler.text);
+                onComplete?.Invoke(ApiResult.Ok(status, request.downloadHandler.text));
             else
-                onError?.Invoke(request.error);
+                onComplete?.Invoke(ApiResult.Fail(status, request.error));
         }
 
         private void ApplyAuth(UnityWebRequest request)

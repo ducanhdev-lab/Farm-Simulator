@@ -58,10 +58,6 @@ namespace IslandHarvest.Game
             GameEventBus.SoldAtStall += HandleCoinsEarned;
             GameEventBus.IslandUnlocked += HandleIslandUnlocked;
 
-            GameplayEvents.OnCropHarvested += HandleCropHarvested;
-            GameplayEvents.OnCoinsEarnedAtStall += HandleCoinsEarned;
-            GameplayEvents.OnIslandUnlocked += HandleIslandUnlocked;
-
             if (IslandManager.Instance != null)
                 IslandManager.Instance.OnCoinChanged += HandleCoinChanged;
         }
@@ -71,10 +67,6 @@ namespace IslandHarvest.Game
             GameEventBus.ResourceGathered -= HandleCropHarvested;
             GameEventBus.SoldAtStall -= HandleCoinsEarned;
             GameEventBus.IslandUnlocked -= HandleIslandUnlocked;
-
-            GameplayEvents.OnCropHarvested -= HandleCropHarvested;
-            GameplayEvents.OnCoinsEarnedAtStall -= HandleCoinsEarned;
-            GameplayEvents.OnIslandUnlocked -= HandleIslandUnlocked;
 
             if (IslandManager.Instance != null)
                 IslandManager.Instance.OnCoinChanged -= HandleCoinChanged;

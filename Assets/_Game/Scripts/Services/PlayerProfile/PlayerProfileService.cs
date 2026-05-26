@@ -18,6 +18,8 @@ namespace IslandHarvest.Game
         public event Action<PlayerProfile> OnProfileSaved;
 
         private string activeSceneName;
+        private int sceneStartingCoins;
+        private List<bool> sceneDefaultUnlocked = new List<bool>();
         private bool isDirty;
 
         public static void EnsureInitialized()
@@ -30,6 +32,8 @@ namespace IslandHarvest.Game
         {
             Instance = this;
             activeSceneName = sceneName;
+            sceneStartingCoins = startingCoins;
+            sceneDefaultUnlocked = defaultUnlockedIslands ?? new List<bool>();
             IsHomeWorld = WorldSceneIds.IsHomeScene(sceneName);
 
             Profile = ProfileMigration.LoadOrMigrate();
@@ -89,6 +93,26 @@ namespace IslandHarvest.Game
             existing = new EventInstanceData(eventId, sceneName);
             Profile.eventInstances.Add(existing);
             return existing;
+        }
+
+        public void ReplaceProfile(PlayerProfile mergedProfile)
+        {
+            if (mergedProfile == null)
+                return;
+
+            Profile = mergedProfile;
+            ProfileMigration.SyncCosmeticsToHomeWorld(Profile);
+
+            if (IsHomeWorld)
+                ActiveWorldData = Profile.homeWorld;
+            else
+            {
+                string eventId = WorldSceneIds.GetEventIdForScene(activeSceneName);
+                var instance = GetOrCreateEventInstance(eventId, activeSceneName);
+                ActiveWorldData = BuildEventGameData(instance, sceneStartingCoins, sceneDefaultUnlocked);
+            }
+
+            isDirty = true;
         }
 
         public void RequestSave() => isDirty = true;

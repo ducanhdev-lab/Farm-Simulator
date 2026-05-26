@@ -106,6 +106,8 @@ flowchart TB
 | Presentation | HUD, windows, juice | 🔶 |
 | Infrastructure | IO, network, pooling, events | 🔶 |
 
+_Ghi chú triển khai gần nhất: `ProfileMerger`, cloud 409/startup sync, `WorldExpansionService`, `BuildingData`, `BiomeId`, `IAnalyticsService` stub._
+
 ---
 
 ## 3. Core gameplay loop (Tycoon)
@@ -203,27 +205,29 @@ erDiagram
 
     HomeWorldData {
         int Coin
-        list unlockedIslands
-        list inventories
-        list silos
-        int array animalLevels
-        list questProgress
-        map biomeFlags
+        string unlockedIslands
+        string inventories
+        string silos
+        string animalLevels
+        string questProgress
+        string biomeFlags
     }
 
     EventInstanceData {
         string eventId
         string sceneName
         int coins
-        list inventories
+        string inventories
     }
 
     CosmeticsData {
-        list ownedSkinIds
+        string ownedSkinIds
         string equippedSkinId
-        list completedIAPProductIds
+        string completedIAPProductIds
     }
 ```
+
+_Ghi chú: các field dạng list/map trong game là JSON array/object; erDiagram chỉ dùng kiểu đơn giản để tương thích GitHub Mermaid._
 
 **Nguồn sự thật:** `player_profile.json` (local) ↔ cloud JSONB (server).
 
@@ -281,16 +285,15 @@ flowchart TB
 ```mermaid
 stateDiagram-v2
     [*] --> Idle
-    Idle --> Pathfinding: has WorkOrder
-    Pathfinding --> Working: reached target
-    Working --> Idle: job complete
-    Idle --> Rest: schedule off-hours
+    Idle --> Pathfinding: WorkOrder
+    Pathfinding --> Working: reached
+    Working --> Idle: complete
+    Idle --> Rest: offHours
 
-    note right of Working
-        Farmer / WorkerAgent
-        Auto harvest / mine / fish machine
-        Conveyor input-output
-    end note
+    state Working {
+        [*] --> FarmerAI
+        FarmerAI --> Machines
+    }
 ```
 
 | Thành phần | Vai trò | Trạng thái |
@@ -386,20 +389,20 @@ flowchart TB
         REPO[Repositories]
     end
 
-  Auth --> MW
+    Auth --> MW
     Profile --> MW
     Save --> MW
     LB --> MW
     Events --> MW
     Snap --> MW
+    Trade --> MW
     MW --> CTRL --> SVC --> REPO --> PG[(PostgreSQL)]
-
     SVC --> Redis[(Redis)]
 ```
 
 | Phase | API / Feature | Trạng thái |
 |-------|----------------|-----------|
-| 1 | Guest auth, profile, cloud save | 🔶 |
+| 1 | Guest auth, profile, cloud save | ✅ |
 | 2 | Leaderboard + anti-cheat validation | ⬜ |
 | 3 | Live events, remote balancing | ⬜ |
 | 4 | Async island visit / snapshot | ⬜ |
@@ -490,7 +493,8 @@ gantt
     dateFormat YYYY-MM
     section Foundation
         PlayerProfile Services EventBus     :done, 2025-01, 2025-02
-        Backend scaffold CloudSave          :active, 2025-02, 2025-03
+        Backend scaffold CloudSave          :done, 2025-02, 2025-03
+        TycoonCore biomes buildings         :active, 2025-03, 2025-05
     section TycoonCore
         Economy recipes buildings biomes    :2025-03, 2025-05
         UI polish inventory automation      :2025-04, 2025-06

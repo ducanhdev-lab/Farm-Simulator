@@ -287,7 +287,7 @@ namespace IslandHarvest.Game
                 {
                     if (island.Constraint != null && !island.Constraint.IsUnlocked) return;
 
-                    int price = CalculateIslandPrice(island.transform.GetSiblingIndex());
+                    int price = GetUnlockPrice(island.transform.GetSiblingIndex());
                     SpawnPurchaserFor(island, price);
                 }
                 else
@@ -439,6 +439,21 @@ namespace IslandHarvest.Game
         public InventoryData LoadInventoryData(string inventoryId) => data.InventoryDatabase.FirstOrDefault(data => data.InventoryId == inventoryId);
         public SiloData LoadSiloData(string siloId) => data.SiloDatabase.FirstOrDefault(data => data.SiloId == siloId);
 
+        public void ReloadFromProfile()
+        {
+            LoadGameData();
+
+            foreach (var island in islands)
+                RefreshIsland(island);
+
+            RequestNavMeshUpdate();
+
+            if (QuestManager.Instance != null)
+                QuestManager.Instance.Initialize(data);
+
+            OnCoinChanged?.Invoke(Coin);
+        }
+
         private void LoadGameData()
         {
             data = profileService.ActiveWorldData;
@@ -456,6 +471,8 @@ namespace IslandHarvest.Game
                 data.equippedSkinId = PlayerSkinManager.DefaultSkinId;
             if (data.completedIAPProductIds == null)
                 data.completedIAPProductIds = new List<string>();
+            if (data.unlockedBiomeIds == null || data.unlockedBiomeIds.Count == 0)
+                data.unlockedBiomeIds = new List<string> { BiomeId.Starter.ToString() };
 
             ProfileMigration.SyncCosmeticsToHomeWorld(profileService.Profile);
 
@@ -518,8 +535,11 @@ namespace IslandHarvest.Game
             PropLocations.Add((position, location));
         }
 
-        private int CalculateIslandPrice(int islandIndex)
+        private int GetUnlockPrice(int islandIndex)
         {
+            if (gameServices?.World != null)
+                return gameServices.World.CalculateIslandUnlockPrice(islandIndex);
+
             return Mathf.RoundToInt(Mathf.Round(baseUnlockPrice * Mathf.Pow(unlockGrowthFactor, islandIndex)) / 5f) * 5;
         }
 

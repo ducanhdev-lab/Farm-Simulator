@@ -143,7 +143,7 @@ namespace IslandHarvest.Game
                 {
                     IsUnlocked = true;
                     OnActivated?.Invoke();
-                    GameplayEvents.RaiseIslandUnlocked();
+                    GameEventBus.RaiseIslandUnlocked();
                     StartCoroutine(InitializeProps(false));
                 });
         }

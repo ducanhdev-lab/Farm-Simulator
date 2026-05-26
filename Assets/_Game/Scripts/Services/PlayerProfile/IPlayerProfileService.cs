@@ -12,6 +12,7 @@ namespace IslandHarvest.Game
         event Action<PlayerProfile> OnProfileSaved;
 
         void InitializeForScene(string sceneName, int startingCoins, System.Collections.Generic.List<bool> defaultUnlockedIslands);
+        void ReplaceProfile(PlayerProfile mergedProfile);
         void RequestSave();
         void SaveNow();
         EventInstanceData GetOrCreateEventInstance(string eventId, string sceneName);

@@ -18,6 +18,7 @@ namespace IslandHarvest.Game
         public List<string> ownedSkinIds;
         public string equippedSkinId;
         public List<string> completedIAPProductIds;
+        public List<string> unlockedBiomeIds;
 
         public GameData(int coin, List<bool> unlockedIslands)
         {
@@ -33,6 +34,7 @@ namespace IslandHarvest.Game
             ownedSkinIds = new List<string> { PlayerSkinManager.DefaultSkinId };
             equippedSkinId = PlayerSkinManager.DefaultSkinId;
             completedIAPProductIds = new List<string>();
+            unlockedBiomeIds = new List<string> { BiomeId.Starter.ToString() };
         }
     }
 
