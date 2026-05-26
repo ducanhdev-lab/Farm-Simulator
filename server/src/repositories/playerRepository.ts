@@ -33,7 +33,11 @@ export async function getPlayerProfile(playerId: string) {
     id: string;
     save_version: number;
     profile_json: Record<string, unknown>;
-  }>("SELECT id, save_version, profile_json FROM players WHERE id = $1", [playerId]);
+    updated_at: string;
+  }>(
+    "SELECT id, save_version, profile_json, updated_at FROM players WHERE id = $1",
+    [playerId]
+  );
 
   return result.rows[0] ?? null;
 }

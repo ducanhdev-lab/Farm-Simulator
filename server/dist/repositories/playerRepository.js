@@ -14,7 +14,7 @@ export async function upsertPlayerProfile(playerId, saveVersion, profileJson) {
     return { ok: true };
 }
 export async function getPlayerProfile(playerId) {
-    const result = await pool.query("SELECT id, save_version, profile_json FROM players WHERE id = $1", [playerId]);
+    const result = await pool.query("SELECT id, save_version, profile_json, updated_at FROM players WHERE id = $1", [playerId]);
     return result.rows[0] ?? null;
 }
 export async function createPlayer(playerId) {
