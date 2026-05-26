@@ -11,6 +11,11 @@ namespace IslandHarvest.Game
     {
         public static UIManager Instance { get; private set; }
 
+        [Header("Modular UI")]
+        [SerializeField] private HudController hudController;
+        [SerializeField] private PanelStack panelStack;
+        [SerializeField] private InventoryWindow inventoryWindow;
+
         [SerializeField, Tooltip("The virtual joystick used for movement input.")]
         private Joystick joystick;
 
@@ -95,6 +100,7 @@ namespace IslandHarvest.Game
         void Awake()
         {
             Instance = this;
+            EnsureModularComponents();
 
             // Fade out the screen with a 1-second delay to ensure the scene has fully loaded.
             screenFader.gameObject.SetActive(true);
@@ -128,36 +134,48 @@ namespace IslandHarvest.Game
         /// </summary>
         /// <param name="farmState">The current state of the farm used to determine the button's icon.</param>
         /// <param name="farmingAction">The action to be invoked when the button is clicked.</param>
+        private void EnsureModularComponents()
+        {
+            if (hudController == null)
+                hudController = GetComponentInChildren<HudController>(true);
+            if (panelStack == null)
+                panelStack = GetComponentInChildren<PanelStack>(true);
+            if (inventoryWindow == null)
+                inventoryWindow = GetComponentInChildren<InventoryWindow>(true);
+        }
+
+        public void BindPlayerInventory(Inventory inventory)
+        {
+            inventoryWindow?.Bind(inventory);
+        }
+
         public void ToggleFarmingButton(Farm.State farmState, System.Action farmingAction)
         {
-            // Get the Image component from the first child of the farmingButton (assuming it contains the icon)
+            if (hudController != null)
+            {
+                hudController.ToggleFarmingButton(farmState, farmingAction);
+                return;
+            }
+
             var iconImage = farmingButton.transform.GetChild(0).GetComponent<Image>();
-
-            // Set the icon of the farming button based on the current state of the farm
             iconImage.sprite = farmingIcons[(int)farmState];
-
-            // Remove any existing listeners from the farming button's onClick event
             farmingButton.onClick.RemoveAllListeners();
-
-            // Add a new listener to the farming button's onClick event that invokes the provided farmingAction
-            // and then hides the button
             farmingButton.onClick.AddListener(() =>
             {
                 farmingAction.Invoke();
                 farmingButton.gameObject.SetActive(false);
             });
-
-            // Make the farming button visible
             farmingButton.gameObject.SetActive(true);
         }
 
-        /// <summary>
-        /// Disables the farming button by hiding it from view.
-        /// This method is used to hide the farming button when it's not needed or when the farm's state does not require it.
-        /// </summary>
         public void DisableFarmingButton()
         {
-            // Hide the farming button, making it inactive and not visible
+            if (hudController != null)
+            {
+                hudController.DisableFarmingButton();
+                return;
+            }
+
             farmingButton.gameObject.SetActive(false);
         }
 
@@ -170,7 +188,13 @@ namespace IslandHarvest.Game
         /// <param name="items">The list of items whose information should be updated.</param>
         public void UpdateItemInfos(List<Item> items)
         {
-            // Remove excess item infos if there are too many
+            if (hudController != null)
+            {
+                hudController.UpdateItemInfos(items);
+                inventoryWindow?.Refresh();
+                return;
+            }
+
             while (itemInfos.Count > items.Count)
             {
                 var lastInfo = itemInfos[itemInfos.Count - 1];
@@ -178,14 +202,12 @@ namespace IslandHarvest.Game
                 Destroy(lastInfo.gameObject);
             }
 
-            // Ensure itemInfos matches items count
             while (itemInfos.Count < items.Count)
             {
                 var info = Instantiate(itemInfoPrefab, itemInfoContainer);
                 itemInfos.Add(info);
             }
 
-            // Update each item info
             for (int i = 0; i < items.Count; i++)
             {
                 itemInfos[i].Init(items[i].Data);
@@ -202,7 +224,12 @@ namespace IslandHarvest.Game
         /// <param name="active">True to show the HUD elements; false to hide them.</param>
         public void ToggleHUD(bool active)
         {
-            // Iterate through each HUD element and set its active state based on the 'active' parameter.
+            if (hudController != null)
+            {
+                hudController.ToggleHUD(active);
+                return;
+            }
+
             huds.ForEach(hud => hud.SetActive(active));
         }
 
@@ -214,10 +241,14 @@ namespace IslandHarvest.Game
         /// </summary>
         public void ReleaseJoystick()
         {
-            // Trigger the joystick's pointer up event to release any ongoing input.
-            joystick.OnPointerUp(null);
+            if (hudController != null)
+            {
+                hudController.ReleaseJoystick();
+                lastJoystickPosition = Vector2.zero;
+                return;
+            }
 
-            // Reset the last known joystick position to zero.
+            joystick.OnPointerUp(null);
             lastJoystickPosition = Vector3.zero;
         }
 
@@ -253,32 +284,28 @@ namespace IslandHarvest.Game
         /// <param name="activity">The action to invoke when the activity button is clicked. If null, the button is hidden.</param>
         public void ToggleActivityButton(Sprite icon, System.Action activity)
         {
-            // Set the activity button's visibility based on whether the 'activity' action is null.
-            activityButton.gameObject.SetActive(activity != null);
+            if (hudController != null)
+            {
+                hudController.ToggleActivityButton(icon, activity);
+                return;
+            }
 
-            // If no action is provided, exit the method.
+            activityButton.gameObject.SetActive(activity != null);
             if (activity == null) return;
 
-            // Set the button's icon to the provided sprite.
             activityButton.transform.GetChild(0).GetComponent<Image>().sprite = icon;
-
-            // Remove any existing click listeners and add a new listener to invoke the provided action.
             activityButton.onClick.RemoveAllListeners();
-            activityButton.onClick.AddListener(() =>
-            {
-                activity.Invoke();
-            });
+            activityButton.onClick.AddListener(() => activity.Invoke());
         }
 
-        /// <summary>
-        /// Sets the joystick's active state.
-        /// This method enables or disables the joystick based on the provided <paramref name="active"/> parameter.
-        /// When <paramref name="active"/> is true, the joystick is shown; otherwise, it is hidden.
-        /// </summary>
-        /// <param name="active">True to show the joystick; false to hide it.</param>
         public void SetActiveJoystick(bool active)
         {
-            // Set the joystick's active state based on the 'active' parameter.
+            if (hudController != null)
+            {
+                hudController.SetActiveJoystick(active);
+                return;
+            }
+
             joystick.gameObject.SetActive(active);
         }
 

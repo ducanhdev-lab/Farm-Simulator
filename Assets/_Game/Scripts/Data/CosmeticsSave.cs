@@ -8,6 +8,12 @@ namespace IslandHarvest.Game
 
         public static CosmeticsData Load()
         {
+            if (PlayerProfileService.Instance?.Profile?.cosmetics != null)
+            {
+                EnsureDefaults(PlayerProfileService.Instance.Profile.cosmetics);
+                return PlayerProfileService.Instance.Profile.cosmetics;
+            }
+
             var data = SaveSystem.LoadData<CosmeticsData>(FileName);
             if (data == null)
                 data = new CosmeticsData();
@@ -19,6 +25,10 @@ namespace IslandHarvest.Game
         public static void Save(CosmeticsData data)
         {
             EnsureDefaults(data);
+
+            if (PlayerProfileService.Instance?.Profile != null)
+                PlayerProfileService.Instance.Profile.cosmetics = data;
+
             SaveSystem.SaveData(data, FileName);
         }
 
@@ -83,6 +93,10 @@ namespace IslandHarvest.Game
 
         public static int GetLatestSaveCoins()
         {
+            var profile = ProfileMigration.LoadOrMigrate();
+            if (profile?.homeWorld != null)
+                return profile.homeWorld.Coin;
+
             string saveName = SaveSystem.GetLatestSaveFileName();
             if (string.IsNullOrEmpty(saveName))
                 return Load().pendingCoins;
@@ -93,6 +107,14 @@ namespace IslandHarvest.Game
 
         public static bool TrySetLatestSaveCoins(int coinBalance)
         {
+            var profile = ProfileMigration.LoadOrMigrate();
+            if (profile?.homeWorld != null)
+            {
+                profile.homeWorld.Coin = coinBalance;
+                SaveSystem.SaveData(profile, WorldSceneIds.ProfileFileName);
+                return true;
+            }
+
             string saveName = SaveSystem.GetLatestSaveFileName();
             if (string.IsNullOrEmpty(saveName))
                 return false;

@@ -19,19 +19,13 @@ namespace IslandHarvest.Game
 
         private void Start()
         {
-            // Determine the level index based on the sibling order of the UI element
-            int levelIndex = transform.GetSiblingIndex() + 1;
-            sceneName = $"Level{levelIndex:D2}";
+            sceneName = WorldSceneIds.HomeIsland;
+            interactable = SaveSystem.HasPlayerProfile()
+                || SaveSystem.SaveFileExists(sceneName)
+                || SaveSystem.SaveFileExists("Level01");
 
-            // Enable interaction if this is the first level or if progress for this level already exists
-            if (levelIndex == 1 || SaveSystem.SaveFileExists(sceneName))
-            {
-                interactable = true;
-            }
-            else
-            {
+            if (!interactable && lockSprite != null)
                 levelIcon.sprite = lockSprite;
-            }
         }
 
         public void OnPointerClick(PointerEventData eventData)

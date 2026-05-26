@@ -15,6 +15,11 @@ namespace IslandHarvest.Game
         public event System.Action<int> OnCoinChanged;
         public event System.Action<GameData> OnSaveGame;
 
+        private GameServices gameServices;
+        private IWalletService wallet;
+        private ISaveCoordinator saveCoordinator;
+        private IPlayerProfileService profileService;
+
         #region Serialized Fields
         [Header("Settings")]
         [SerializeField, Tooltip("The size of each island, used to determine spacing and placement.")]
@@ -107,13 +112,21 @@ namespace IslandHarvest.Game
 
         public int Coin
         {
-            get => data.Coin;
+            get => wallet != null ? wallet.Balance : data.Coin;
             set
             {
-                data.Coin = value;
-                OnCoinChanged?.Invoke(value);
+                if (wallet != null)
+                    wallet.SetBalance(value);
+                else
+                {
+                    data.Coin = value;
+                    OnCoinChanged?.Invoke(value);
+                }
             }
         }
+
+        public GameData Data => data;
+        public bool IsHomeWorld => profileService == null || profileService.IsHomeWorld;
         #endregion
 
         #region Unity Lifecycle
@@ -134,8 +147,34 @@ namespace IslandHarvest.Game
 
             ItemDatabase.Initialize();
             saveFileName = SceneManager.GetActiveScene().name;
+
+            gameServices = GetComponent<GameServices>();
+            if (gameServices == null)
+                gameServices = gameObject.AddComponent<GameServices>();
+
+            var defaultUnlocked = islands.Select(island => island.IsUnlocked).ToList();
+            gameServices.BootstrapForScene(defaultUnlocked);
+
+            profileService = gameServices.Profile;
+            wallet = gameServices.Wallet;
+            saveCoordinator = gameServices.Save;
+            wallet.OnBalanceChanged += HandleWalletChanged;
+            saveCoordinator.OnCollectSaveState += HandleCollectSaveState;
+
             LoadGameData();
         }
+
+        private void OnDestroy()
+        {
+            if (wallet != null)
+                wallet.OnBalanceChanged -= HandleWalletChanged;
+            if (saveCoordinator != null)
+                saveCoordinator.OnCollectSaveState -= HandleCollectSaveState;
+        }
+
+        private void HandleWalletChanged(int balance) => OnCoinChanged?.Invoke(balance);
+
+        private void HandleCollectSaveState(GameData _) => CollectWorldState();
 
         private void Start()
         {
@@ -163,16 +202,6 @@ namespace IslandHarvest.Game
         {
             SaveGameData();
             DOTween.KillAll();
-        }
-
-        private void OnApplicationPause(bool pauseStatus)
-        {
-            if (pauseStatus) SaveGameData();
-        }
-
-        private void OnApplicationQuit()
-        {
-            SaveGameData();
         }
         #endregion
 
@@ -412,61 +441,57 @@ namespace IslandHarvest.Game
 
         private void LoadGameData()
         {
-            data = SaveSystem.LoadData<GameData>(saveFileName);
+            data = profileService.ActiveWorldData;
 
             if (data == null)
             {
                 var unlockedBools = islands.Select(island => island.IsUnlocked).ToList();
                 data = new GameData(startingMoney, unlockedBools);
+                profileService.Profile.homeWorld = data;
             }
-            else
+
+            if (data.ownedSkinIds == null)
+                data.ownedSkinIds = new List<string> { PlayerSkinManager.DefaultSkinId };
+            if (string.IsNullOrEmpty(data.equippedSkinId))
+                data.equippedSkinId = PlayerSkinManager.DefaultSkinId;
+            if (data.completedIAPProductIds == null)
+                data.completedIAPProductIds = new List<string>();
+
+            ProfileMigration.SyncCosmeticsToHomeWorld(profileService.Profile);
+
+            if (data.UnlockedIslands != null && data.UnlockedIslands.Count == islands.Count)
             {
-                if (data.ownedSkinIds == null)
-                    data.ownedSkinIds = new List<string> { PlayerSkinManager.DefaultSkinId };
-                if (string.IsNullOrEmpty(data.equippedSkinId))
-                    data.equippedSkinId = PlayerSkinManager.DefaultSkinId;
-                if (data.completedIAPProductIds == null)
-                    data.completedIAPProductIds = new List<string>();
-
-                CosmeticsSave.MergeFromLevelSave(data);
-                CosmeticsSave.ApplyPendingCoinsToGameData(data);
-
-                // Apply unlocked states
-                if (data.UnlockedIslands.Count == islands.Count)
-                {
-                    for (int i = 0; i < islands.Count; i++)
-                    {
-                        islands[i].IsUnlocked = data.UnlockedIslands[i];
-                    }
-                }
-
-                // Spawn Saved Purchasers
-                foreach (var pData in data.Purchasers)
-                {
-                    if (islandGrid.TryGetValue(pData.Position, out Island island))
-                    {
-                        // Ensure we don't spawn purchasers on already unlocked islands (save file mismatch protection)
-                        if (!island.IsUnlocked)
-                        {
-                            SpawnPurchaserFor(island, pData.Price);
-                        }
-                    }
-                }
+                for (int i = 0; i < islands.Count; i++)
+                    islands[i].IsUnlocked = data.UnlockedIslands[i];
             }
+
+            foreach (var pData in data.Purchasers)
+            {
+                if (islandGrid.TryGetValue(pData.Position, out Island island) && !island.IsUnlocked)
+                    SpawnPurchaserFor(island, pData.Price);
+            }
+
+            wallet.Bind(data);
+            OnCoinChanged?.Invoke(Coin);
         }
 
         public void SyncCosmeticsToActiveSave()
         {
-            CosmeticsSave.SyncToLevelSave(data);
+            ProfileMigration.SyncHomeWorldToCosmetics(profileService.Profile);
+            CosmeticsSave.Save(profileService.Profile.cosmetics);
+        }
+
+        private void CollectWorldState()
+        {
+            data.UnlockedIslands = islands.Select(island => island.IsUnlocked).ToList();
+            data.Purchasers = Purchasers;
+            OnSaveGame?.Invoke(data);
         }
 
         private void SaveGameData()
         {
-            data.UnlockedIslands = islands.Select(island => island.IsUnlocked).ToList();
-            data.Purchasers = Purchasers; // This list is kept in sync in Spawn/Remove methods
-            OnSaveGame?.Invoke(data);
-
-            SaveSystem.SaveData<GameData>(data, saveFileName);
+            CollectWorldState();
+            saveCoordinator?.SaveNow();
         }
         #endregion
 

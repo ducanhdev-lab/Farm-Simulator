@@ -238,8 +238,8 @@ namespace IslandHarvest.Game
                 // Refresh the upgrade UI to reflect the new silo level and upgrade price.
                 ShowUpgrade();
 
-                // Play a sound effect to indicate the purchase.
                 AudioManager.Instance.PlaySFX(AudioID.Cash);
+                GameEventBus.RaiseBuildingUpgraded(data.SiloId, data.SiloLevel);
             };
 
             // Define an action for upgrading a farmer.
@@ -262,8 +262,8 @@ namespace IslandHarvest.Game
                 // Refresh the upgrade UI to reflect the new farmer level and upgrade price.
                 ShowUpgrade();
 
-                // Play a sound effect to indicate the purchase.
                 AudioManager.Instance.PlaySFX(AudioID.Cash);
+                GameEventBus.RaiseBuildingUpgraded($"farmer_{index}", farmer.Level);
             };
 
             // Show the silo upgrade UI with the current silo level, capacity, upgrade price,

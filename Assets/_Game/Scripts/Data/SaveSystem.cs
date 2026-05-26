@@ -9,12 +9,14 @@ namespace IslandHarvest.Game
 {
     public static class SaveSystem
     {
-        public const int CurrentSaveVersion = 1;
+        public const int CurrentSaveVersion = 2;
 
         public static void SaveData<T>(T data, string fileName)
         {
             if (data is GameData gameData)
                 gameData.saveVersion = CurrentSaveVersion;
+            else if (data is PlayerProfile profile)
+                profile.saveVersion = CurrentSaveVersion;
 
             string filePath = GetJsonPath(fileName);
             string json = JsonUtility.ToJson(data, prettyPrint: true);
@@ -47,6 +49,9 @@ namespace IslandHarvest.Game
 
         public static string GetLatestSaveFileName()
         {
+            if (SaveFileExists(WorldSceneIds.ProfileFileName))
+                return WorldSceneIds.HomeIsland;
+
             var jsonFiles = Directory.GetFiles(Application.persistentDataPath, "*.json");
             var latestJson = jsonFiles
                 .OrderByDescending(File.GetLastWriteTime)
@@ -62,6 +67,8 @@ namespace IslandHarvest.Game
                 .Select(Path.GetFileNameWithoutExtension)
                 .FirstOrDefault(name => IsPlayableSceneSave(name));
         }
+
+        public static bool HasPlayerProfile() => SaveFileExists(WorldSceneIds.ProfileFileName);
 
         public static bool IsSceneInBuildSettings(string sceneName)
         {

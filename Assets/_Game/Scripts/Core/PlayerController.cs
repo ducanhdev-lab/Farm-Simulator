@@ -92,6 +92,12 @@ namespace IslandHarvest.Game
             Inventory = GetComponent<Inventory>();
         }
 
+        private void Start()
+        {
+            if (UIManager.Instance != null)
+                UIManager.Instance.BindPlayerInventory(Inventory);
+        }
+
         private void Update()
         {
             // Check if the player is grounded and reset vertical velocity if falling

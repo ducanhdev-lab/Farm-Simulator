@@ -263,7 +263,7 @@ namespace IslandHarvest.Game
             target.GetComponent<Inventory>().AddItem(farm.CropData.ItemId);
 
             if (target.CompareTag("Player"))
-                GameplayEvents.RaiseCropHarvested(1);
+                GameEventBus.RaiseResourceGathered(1);
         }
     }
 }

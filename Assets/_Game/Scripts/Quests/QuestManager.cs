@@ -54,6 +54,10 @@ namespace IslandHarvest.Game
 
         private void SubscribeEvents()
         {
+            GameEventBus.ResourceGathered += HandleCropHarvested;
+            GameEventBus.SoldAtStall += HandleCoinsEarned;
+            GameEventBus.IslandUnlocked += HandleIslandUnlocked;
+
             GameplayEvents.OnCropHarvested += HandleCropHarvested;
             GameplayEvents.OnCoinsEarnedAtStall += HandleCoinsEarned;
             GameplayEvents.OnIslandUnlocked += HandleIslandUnlocked;
@@ -64,6 +68,10 @@ namespace IslandHarvest.Game
 
         private void UnsubscribeEvents()
         {
+            GameEventBus.ResourceGathered -= HandleCropHarvested;
+            GameEventBus.SoldAtStall -= HandleCoinsEarned;
+            GameEventBus.IslandUnlocked -= HandleIslandUnlocked;
+
             GameplayEvents.OnCropHarvested -= HandleCropHarvested;
             GameplayEvents.OnCoinsEarnedAtStall -= HandleCoinsEarned;
             GameplayEvents.OnIslandUnlocked -= HandleIslandUnlocked;

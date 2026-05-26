@@ -89,18 +89,12 @@ namespace IslandHarvest.Game
 
         private static string ResolveStartupSceneName()
         {
-            string defaultSceneName = GetDefaultLevelSceneName();
-            string latestSaveScene = SaveSystem.GetLatestSaveFileName();
-
-            if (!string.IsNullOrEmpty(latestSaveScene) && SaveSystem.IsSceneInBuildSettings(latestSaveScene))
-                return latestSaveScene;
-
-            return defaultSceneName;
+            return WorldSceneIds.HomeIsland;
         }
 
         private static string GetDefaultLevelSceneName()
         {
-            const string fallbackScene = "Level01";
+            const string fallbackScene = WorldSceneIds.HomeIsland;
             string defaultScenePath = SceneUtility.GetScenePathByBuildIndex(1);
 
             if (string.IsNullOrEmpty(defaultScenePath))

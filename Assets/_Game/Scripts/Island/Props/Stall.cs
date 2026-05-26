@@ -107,8 +107,12 @@ namespace IslandHarvest.Game
 
                 int saleValue = actualDeduction * item.Data.Price;
                 coinsEarnedThisSale += saleValue;
-                IslandManager.Instance.Coin += saleValue;
                 inventory.SubtractItem(item.ItemId, actualDeduction);
+
+                if (GameServices.Instance?.Economy != null)
+                    GameServices.Instance.Economy.TrySellAtStall(item.Data, actualDeduction, out _);
+                else
+                    IslandManager.Instance.Coin += saleValue;
 
                 // Refresh the list of valid items after each sale.
                 validItems = inventory.Items.Where(i => acceptedItems.Contains(i.Data)).ToList();
@@ -127,8 +131,9 @@ namespace IslandHarvest.Game
                 elapsedTime += Time.deltaTime; // Increment the elapsed time.
             }
 
-            if (coinsEarnedThisSale > 0)
-                GameplayEvents.RaiseCoinsEarnedAtStall(coinsEarnedThisSale);
+            // Coins + quest hooks raised by EconomyService / GameEventBus when used.
+            if (coinsEarnedThisSale > 0 && GameServices.Instance?.Economy == null)
+                GameEventBus.RaiseSoldAtStall(coinsEarnedThisSale);
         }
 
         /// <summary>
