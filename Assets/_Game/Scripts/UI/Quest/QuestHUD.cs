@@ -144,6 +144,9 @@ namespace IslandHarvest.Game
 
         private void Refresh()
         {
+            if (panelRoot != null)
+                panelRoot.gameObject.SetActive(QuestManager.Instance.ShouldShowDailyQuests());
+
             var quests = QuestManager.Instance.GetActiveQuests();
             for (int i = 0; i < rows.Count; i++)
             {

@@ -77,6 +77,18 @@ namespace IslandHarvest.Game
             return activeQuests.Select(q => (q.Data, q.Progress)).ToList();
         }
 
+        /// <summary>
+        /// True while at least one daily quest is incomplete or has an unclaimed reward.
+        /// </summary>
+        public bool ShouldShowDailyQuests()
+        {
+            if (activeQuests.Count == 0)
+                return false;
+
+            return activeQuests.Any(q =>
+                !q.Progress.isCompleted || !q.Progress.rewardClaimed);
+        }
+
         public void ClaimReward(string questId)
         {
             var quest = activeQuests.FirstOrDefault(q => q.Data.QuestId == questId);

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -16,6 +17,10 @@ namespace IslandHarvest.Game
 
         [Tooltip("Audio clip to play when the title screen is displayed upon first opening the game.")]
         [SerializeField] private AudioClip titleSong;
+
+        [Header("Shop")]
+        [SerializeField] private Button shopButton;
+        [SerializeField] private GameShopWindow shopWindow;
 
         private void Awake()
         {
@@ -39,28 +44,72 @@ namespace IslandHarvest.Game
 
             // Play the title screen background music when the game is first opened.
             AudioManager.Instance.PlayBGM(titleSong);
+
+            IAPService.EnsureInstance();
+            InitializeShopButton();
+        }
+
+        private void InitializeShopButton()
+        {
+            if (shopButton == null)
+                shopButton = GameObject.Find("ShopButton")?.GetComponent<Button>();
+
+            if (shopWindow == null)
+                shopWindow = FindFirstObjectByType<GameShopWindow>(FindObjectsInactive.Include);
+
+            if (shopWindow != null)
+                shopWindow.Hide();
+
+            if (shopButton == null || shopWindow == null)
+                return;
+
+            shopButton.onClick.RemoveAllListeners();
+            shopButton.onClick.AddListener(() =>
+            {
+                shopWindow.ShowForMainMenu();
+                AudioManager.Instance.PlaySFX(AudioID.UI_Accept);
+            });
         }
 
         private void InitializeStartButton()
         {
-            // Get the default scene (first level) name
-            string defaultScenePath = SceneUtility.GetScenePathByBuildIndex(1);
-            string defaultSceneName = System.IO.Path.GetFileNameWithoutExtension(defaultScenePath);
-
-            // Get the name of the latest save file, if any
-            string latestFileName = SaveSystem.GetLatestSaveFileName();
-            string latestSceneName = string.IsNullOrEmpty(latestFileName) ? defaultSceneName : latestFileName;
+            string sceneToLoad = ResolveStartupSceneName();
 
             // Add a listener to start loading the scene when the button is clicked
             startButton.onClick.AddListener(() =>
             {
-                StartCoroutine(LoadSceneAsync(latestSceneName)); // Start loading the scene asynchronously
+                StartCoroutine(LoadSceneAsync(sceneToLoad));
                 AudioManager.Instance.PlaySFX(AudioID.UI_Accept); // Play 'UI Accept' sound
                 DOTween.Kill(startButton.transform); // Stop any ongoing tweening on the button (if any)
             });
 
             // Apply a pulsing animation to the start button for visual effect
             startButton.transform.DOScale(Vector3.one * 1.2f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+        }
+
+        private static string ResolveStartupSceneName()
+        {
+            string defaultSceneName = GetDefaultLevelSceneName();
+            string latestSaveScene = SaveSystem.GetLatestSaveFileName();
+
+            if (!string.IsNullOrEmpty(latestSaveScene) && SaveSystem.IsSceneInBuildSettings(latestSaveScene))
+                return latestSaveScene;
+
+            return defaultSceneName;
+        }
+
+        private static string GetDefaultLevelSceneName()
+        {
+            const string fallbackScene = "Level01";
+            string defaultScenePath = SceneUtility.GetScenePathByBuildIndex(1);
+
+            if (string.IsNullOrEmpty(defaultScenePath))
+            {
+                Debug.LogWarning($"Build index 1 is missing; falling back to '{fallbackScene}'.");
+                return fallbackScene;
+            }
+
+            return Path.GetFileNameWithoutExtension(defaultScenePath);
         }
 
         private IEnumerator LoadSceneAsync(string sceneName)
@@ -71,6 +120,16 @@ namespace IslandHarvest.Game
 
             // Start loading the scene asynchronously but prevent automatic activation
             AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName);
+            if (asyncOperation == null)
+            {
+                string fallbackScene = GetDefaultLevelSceneName();
+                Debug.LogError($"Scene '{sceneName}' is not in Build Settings. Loading '{fallbackScene}' instead.");
+                asyncOperation = SceneManager.LoadSceneAsync(fallbackScene);
+
+                if (asyncOperation == null)
+                    yield break;
+            }
+
             asyncOperation.allowSceneActivation = false;
 
             // Wait until the scene loading is complete (but not yet activated)

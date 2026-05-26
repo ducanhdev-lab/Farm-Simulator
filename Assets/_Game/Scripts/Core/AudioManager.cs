@@ -45,6 +45,7 @@ namespace IslandHarvest.Game
         private AudioClip currentBGM;
         private float originalBGMVolume;
         private float cooldown;
+        private Coroutine _bgmCoroutine;
 
         void Awake()
         {
@@ -89,23 +90,47 @@ namespace IslandHarvest.Game
             IsSFXOn = PlayerPrefs.GetInt("SFX ON", 1) > 0;
             IsBGMOn = PlayerPrefs.GetInt("BGM ON", 1) > 0;
 
-            // Apply settings immediately
-            SetSFX(IsSFXOn);
-            SetBGM(IsBGMOn);
+            ApplyMixerVolumes();
+        }
+
+        private void ApplyMixerVolumes()
+        {
+            audioMixer.SetFloat("SFX Volume", IsSFXOn ? 0f : -80f);
+            audioMixer.SetFloat("BGM Volume", IsBGMOn ? 0f : -80f);
         }
 
         public void SetSFX(bool isOn)
         {
             IsSFXOn = isOn;
-            audioMixer.SetFloat("SFX Volume", isOn ? 0f : -80f);
+            ApplyMixerVolumes();
             PlayerPrefs.SetInt("SFX ON", isOn ? 1 : 0);
         }
 
         public void SetBGM(bool isOn)
         {
+            bool shouldResume = isOn && !IsBGMOn;
+
             IsBGMOn = isOn;
-            audioMixer.SetFloat("BGM Volume", isOn ? 0f : -80f);
+            ApplyMixerVolumes();
             PlayerPrefs.SetInt("BGM ON", isOn ? 1 : 0);
+
+            if (!isOn)
+                StopBGMPlayback();
+            else if (shouldResume && currentBGM != null)
+                PlayBGM(currentBGM, forceReplay: true);
+        }
+
+        private void StopBGMPlayback()
+        {
+            if (_bgmCoroutine != null)
+            {
+                StopCoroutine(_bgmCoroutine);
+                _bgmCoroutine = null;
+            }
+
+            _BGMPlayer.DOKill();
+            _BGMPlayer.Stop();
+            _BGMPlayer.clip = null;
         }
 
         /// <summary>
@@ -114,12 +139,27 @@ namespace IslandHarvest.Game
         /// <param name="clip">The audio clip to play.</param>
         /// <param name="loop">Whether the clip should loop.</param>
         /// <param name="fade">Whether to apply fading effects when changing clips.</param>
-        public void PlayBGM(AudioClip clip, bool loop = true, bool fade = true)
+        public void PlayBGM(AudioClip clip, bool loop = true, bool fade = true, bool forceReplay = false)
         {
-            if (clip == null || clip == currentBGM) return;
+            if (clip == null) return;
+            if (!forceReplay && clip == currentBGM && _BGMPlayer.isPlaying) return;
 
             currentBGM = clip;
-            StartCoroutine(PlayBGMAsync(clip, loop, fade));
+
+            if (!IsBGMOn)
+            {
+                StopBGMPlayback();
+                return;
+            }
+
+            if (_bgmCoroutine != null)
+            {
+                StopCoroutine(_bgmCoroutine);
+                _bgmCoroutine = null;
+            }
+
+            _BGMPlayer.DOKill();
+            _bgmCoroutine = StartCoroutine(PlayBGMAsync(clip, loop, fade));
         }
 
         /// <summary>
@@ -131,7 +171,7 @@ namespace IslandHarvest.Game
         /// <param name="waitForCooldown">Whether to wait for cooldown before playing another SFX.</param>
         public void PlaySFX(AudioClip clip, bool pauseBGM = false, float pitch = 1f, bool waitForCooldown = true)
         {
-            if (clip == null) return;
+            if (!IsSFXOn || clip == null) return;
             if (waitForCooldown && cooldown > 0f) return;
 
             if (pauseBGM)
@@ -169,13 +209,28 @@ namespace IslandHarvest.Game
         /// <returns>An enumerator for coroutine.</returns>
         IEnumerator PlayBGMAsync(AudioClip clip, bool loop, bool fade)
         {
+            if (!IsBGMOn)
+            {
+                _bgmCoroutine = null;
+                yield break;
+            }
+
             if (fade) yield return _BGMPlayer.DOFade(0, fadeDuration).WaitForCompletion();
+
+            if (!IsBGMOn)
+            {
+                _bgmCoroutine = null;
+                yield break;
+            }
 
             _BGMPlayer.clip = clip;
             _BGMPlayer.loop = loop;
             _BGMPlayer.Play();
+            ApplyMixerVolumes();
 
             if (fade) yield return _BGMPlayer.DOFade(originalBGMVolume, fadeDuration).WaitForCompletion();
+
+            _bgmCoroutine = null;
         }
 
         /// <summary>

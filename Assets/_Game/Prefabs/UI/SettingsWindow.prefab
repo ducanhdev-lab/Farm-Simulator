@@ -1010,7 +1010,6 @@ RectTransform:
   - {fileID: 4330250062018858116}
   - {fileID: 2574683051766042671}
   - {fileID: 6633983193520669962}
-  - {fileID: 1663189572734339317}
   m_Father: {fileID: 4330250062629748902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1646,7 +1645,7 @@ MonoBehaviour:
   bgmToggle: {fileID: 4330250062018858119}
   vibrationToggle: {fileID: 8189407117823546071}
   shadowToggle: {fileID: 8560819292744035325}
-  renderScaleSlider: {fileID: 6076483901571890804}
+  restorePurchasesButton: {fileID: 0}
 --- !u!1 &4330250062663713967
 GameObject:
   m_ObjectHideFlags: 0
@@ -2469,7 +2468,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1663189572734339317
 RectTransform:
   m_ObjectHideFlags: 0

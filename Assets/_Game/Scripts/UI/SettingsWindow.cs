@@ -24,9 +24,6 @@ namespace IslandHarvest.Game
         [SerializeField, Tooltip("Toggle to enable or disable shadow.")]
         private Toggle shadowToggle;
 
-        [SerializeField, Tooltip("Slider to set the game's render scale.")]
-        private Slider renderScaleSlider;
-
         private void Start()
         {
             InitializeWindowVisuals();
@@ -51,10 +48,7 @@ namespace IslandHarvest.Game
             }
 
             if (GraphicsManager.Instance != null)
-            {
                 shadowToggle.isOn = GraphicsManager.Instance.IsShadowsOn;
-                renderScaleSlider.value = Mathf.InverseLerp(0.5f, 1.0f, GraphicsManager.Instance.CurrentRenderScale);
-            }
 
             vibrationToggle.isOn = PlayerPrefs.GetInt("Vibration ON", 1) > 0;
         }
@@ -67,7 +61,6 @@ namespace IslandHarvest.Game
 
             // Graphics Events
             shadowToggle.onValueChanged.AddListener((isOn) => GraphicsManager.Instance?.SetShadows(isOn));
-            renderScaleSlider.onValueChanged.AddListener((val) => GraphicsManager.Instance?.SetRenderScale(val));
 
             // Haptic Event
             vibrationToggle.onValueChanged.AddListener((isOn) =>

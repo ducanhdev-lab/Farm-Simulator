@@ -179,6 +179,33 @@ namespace IslandHarvest.Game
         }
 
         /// <summary>
+        /// Applies character skin materials used for normal and fade-out visibility.
+        /// </summary>
+        public void ApplySkinMaterials(Material opaque, Material transparent)
+        {
+            if (opaque == null || skinRenderer == null)
+                return;
+
+            opaqueMaterial = opaque;
+            if (transparent != null)
+                transparentMaterial = transparent;
+
+            Material current = skinRenderer.material;
+            if (current != null)
+                current.DOKill();
+
+            var materials = skinRenderer.materials;
+            if (materials == null || materials.Length == 0)
+            {
+                skinRenderer.material = opaqueMaterial;
+                return;
+            }
+
+            materials[0] = opaqueMaterial;
+            skinRenderer.materials = materials;
+        }
+
+        /// <summary>
         /// Sets the visibility of the player and adjusts the material and transparency accordingly.
         /// </summary>
         /// <param name="visible">Whether the player should be visible (true) or invisible (false).</param>

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace IslandHarvest.Game
 {
@@ -50,7 +51,7 @@ namespace IslandHarvest.Game
             var latestJson = jsonFiles
                 .OrderByDescending(File.GetLastWriteTime)
                 .Select(Path.GetFileNameWithoutExtension)
-                .FirstOrDefault();
+                .FirstOrDefault(name => IsPlayableSceneSave(name));
 
             if (!string.IsNullOrEmpty(latestJson))
                 return latestJson;
@@ -59,8 +60,31 @@ namespace IslandHarvest.Game
             return datFiles
                 .OrderByDescending(File.GetLastWriteTime)
                 .Select(Path.GetFileNameWithoutExtension)
-                .FirstOrDefault();
+                .FirstOrDefault(name => IsPlayableSceneSave(name));
         }
+
+        public static bool IsSceneInBuildSettings(string sceneName)
+        {
+            if (string.IsNullOrEmpty(sceneName))
+                return false;
+
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+            {
+                string path = SceneUtility.GetScenePathByBuildIndex(i);
+                if (string.IsNullOrEmpty(path))
+                    continue;
+
+                if (Path.GetFileNameWithoutExtension(path) == sceneName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsPlayableSceneSave(string fileName) =>
+            !string.IsNullOrEmpty(fileName)
+            && SaveFileExists(fileName)
+            && IsSceneInBuildSettings(fileName);
 
         public static bool SaveFileExists(string fileName)
         {

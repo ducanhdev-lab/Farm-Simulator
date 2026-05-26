@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60283589ee27b774093853be8c0e28f6, type: 3}
+  m_Name: SkinCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::IslandHarvest.Game.SkinCatalogConfig
+  entries:
+  - assetFileName: Skin_Blue
+    skinId: skin_blue
+    displayName: Blue
+    skinMaterial: {fileID: 2100000, guid: 51ee3550d4e54564a927a5a4203e62e1, type: 2}
+    transparentMaterial: {fileID: 0}
+    price: 2000
+    unlockedByDefault: 0
+    purchaseType: 1
+  - assetFileName: Skin_DarkRed
+    skinId: skin_darkred
+    displayName: DarkRed
+    skinMaterial: {fileID: 2100000, guid: b7e04d551d42cef4794c45eefe82dede, type: 2}
+    transparentMaterial: {fileID: 0}
+    price: 2000
+    unlockedByDefault: 0
+    purchaseType: 1
+  - assetFileName: Skin_Green
+    skinId: Skin_Green
+    displayName: Green
+    skinMaterial: {fileID: 2100000, guid: e7c3a4b82f9d41c6a5e8d0f1b2c3d4e5, type: 2}
+    transparentMaterial: {fileID: 0}
+    price: 2000
+    unlockedByDefault: 0
+    purchaseType: 1
+  - assetFileName: Skin_Purple
+    skinId: skin_purple
+    displayName: Purple
+    skinMaterial: {fileID: 2100000, guid: 582c561159122304fa6af2b7af90fde9, type: 2}
+    transparentMaterial: {fileID: 0}
+    price: 2000
+    unlockedByDefault: 0
+    purchaseType: 1
+  - assetFileName: Skin_Red
+    skinId: skin_red
+    displayName: Red
+    skinMaterial: {fileID: 2100000, guid: abbba5216e295e944b1eea170889464b, type: 2}
+    transparentMaterial: {fileID: 0}
+    price: 2000
+    unlockedByDefault: 0
+    purchaseType: 1
+  - assetFileName: Skin_Yellow
+    skinId: skin_yellow
+    displayName: Yellow
+    skinMaterial: {fileID: 2100000, guid: 4adfce9253b18954ab9ef1e93111db39, type: 2}
+    transparentMaterial: {fileID: 0}
+    price: 0
+    unlockedByDefault: 1
+    purchaseType: 1

@@ -15,6 +15,9 @@ namespace IslandHarvest.Game
         public int[] AnimalLevels;
         public string lastQuestResetDate;
         public List<QuestProgressData> QuestProgress;
+        public List<string> ownedSkinIds;
+        public string equippedSkinId;
+        public List<string> completedIAPProductIds;
 
         public GameData(int coin, List<bool> unlockedIslands)
         {
@@ -27,6 +30,9 @@ namespace IslandHarvest.Game
             AnimalLevels = new int[System.Enum.GetValues(typeof(AnimalType)).Length];
             lastQuestResetDate = string.Empty;
             QuestProgress = new List<QuestProgressData>();
+            ownedSkinIds = new List<string> { PlayerSkinManager.DefaultSkinId };
+            equippedSkinId = PlayerSkinManager.DefaultSkinId;
+            completedIAPProductIds = new List<string>();
         }
     }
 

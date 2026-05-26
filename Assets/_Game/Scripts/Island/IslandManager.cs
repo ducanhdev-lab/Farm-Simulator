@@ -88,6 +88,23 @@ namespace IslandHarvest.Game
 
         public int[] AnimalLevels => data.AnimalLevels;
 
+        public List<string> OwnedSkinIds
+        {
+            get
+            {
+                if (data.ownedSkinIds == null)
+                    data.ownedSkinIds = new List<string> { PlayerSkinManager.DefaultSkinId };
+                return data.ownedSkinIds;
+            }
+            set => data.ownedSkinIds = value;
+        }
+
+        public string EquippedSkinId
+        {
+            get => string.IsNullOrEmpty(data.equippedSkinId) ? PlayerSkinManager.DefaultSkinId : data.equippedSkinId;
+            set => data.equippedSkinId = value;
+        }
+
         public int Coin
         {
             get => data.Coin;
@@ -404,6 +421,16 @@ namespace IslandHarvest.Game
             }
             else
             {
+                if (data.ownedSkinIds == null)
+                    data.ownedSkinIds = new List<string> { PlayerSkinManager.DefaultSkinId };
+                if (string.IsNullOrEmpty(data.equippedSkinId))
+                    data.equippedSkinId = PlayerSkinManager.DefaultSkinId;
+                if (data.completedIAPProductIds == null)
+                    data.completedIAPProductIds = new List<string>();
+
+                CosmeticsSave.MergeFromLevelSave(data);
+                CosmeticsSave.ApplyPendingCoinsToGameData(data);
+
                 // Apply unlocked states
                 if (data.UnlockedIslands.Count == islands.Count)
                 {
@@ -426,6 +453,11 @@ namespace IslandHarvest.Game
                     }
                 }
             }
+        }
+
+        public void SyncCosmeticsToActiveSave()
+        {
+            CosmeticsSave.SyncToLevelSave(data);
         }
 
         private void SaveGameData()
