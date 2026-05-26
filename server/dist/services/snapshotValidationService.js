@@ -1,4 +1,4 @@
-const MAX_COINS = 50_000_000;
+const MAX_COINS = 999_999_999;
 const MAX_ISLANDS = 10_000;
 export function validateIslandSnapshot(snapshot) {
     const coins = snapshot.coins;

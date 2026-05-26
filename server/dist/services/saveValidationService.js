@@ -1,4 +1,7 @@
-const MAX_COINS = 50_000_000;
+/** Max home coins accepted on cloud save / leaderboard (solo farm can exceed 50M). */
+const MAX_COINS = 999_999_999;
+/** Below this cloud balance, treat next upload as offline catch-up (no per-minute delta cap). */
+const OFFLINE_CATCHUP_THRESHOLD = 50_000;
 const MAX_SAVE_VERSION = 10_000;
 const MAX_COIN_INCREASE_PER_SAVE = 15_000;
 const MAX_COIN_PER_MINUTE = 800;
@@ -53,5 +56,8 @@ export function validatePlayerProfile(profile, context) {
     }
     const newCoins = Math.floor(coins);
     const previousCoins = extractCoins(context?.previousProfile ?? null);
+    if (newCoins <= MAX_COINS && previousCoins < OFFLINE_CATCHUP_THRESHOLD) {
+        return { valid: true, coins: newCoins };
+    }
     return validateCoinDelta(previousCoins, newCoins, context);
 }
