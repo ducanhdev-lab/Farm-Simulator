@@ -7,6 +7,7 @@ namespace IslandHarvest.Game
     public class PlayerProfile
     {
         public string profileId;
+        public string displayName;
         public int saveVersion;
         public string lastSaveUtc;
         public GameData homeWorld;
@@ -31,6 +32,15 @@ namespace IslandHarvest.Game
         {
             lastSaveUtc = DateTime.UtcNow.ToString("o");
             saveVersion = SaveSystem.CurrentSaveVersion;
+        }
+
+        /// <summary>
+        /// Raises save version above cloud so the next PUT /player/save succeeds after conflict.
+        /// </summary>
+        public void BumpSaveVersionAbove(int minimumVersion)
+        {
+            saveVersion = Math.Max(saveVersion, minimumVersion) + 1;
+            lastSaveUtc = DateTime.UtcNow.ToString("o");
         }
     }
 

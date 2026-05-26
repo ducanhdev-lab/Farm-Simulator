@@ -29,6 +29,10 @@ Or **Setup In-Game Leaderboard (UIManager)** / **Setup Main Menu Leaderboard** i
 
 See [server/README.md](../../server/README.md). Restart `npm run dev` after pulling new routes.
 
+## Editor (manual)
+
+See [EDITOR_SETUP_GUIDE.md](EDITOR_SETUP_GUIDE.md) when wiring scenes/prefabs in Unity.
+
 ## Related
 
 - [FARM_LIFE_DESIGN.md](FARM_LIFE_DESIGN.md)

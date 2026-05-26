@@ -69,11 +69,15 @@ namespace IslandHarvest.Game
                 rows.Add(row);
             }
 
+            string localPlayerId = CloudSaveService.Instance?.PlayerId;
+
             for (int i = 0; i < entries.Length; i++)
             {
                 var entry = entries[i];
-                string shortId = ShortPlayerId(entry.playerId);
-                rows[i].text = $"#{entry.rank}  {shortId}  —  {entry.coins:N0} coins";
+                string label = FormatEntryLabel(entry);
+                bool isLocal = !string.IsNullOrEmpty(localPlayerId) && entry.playerId == localPlayerId;
+                rows[i].text = $"#{entry.rank}  {label}  —  {entry.coins:N0}{(isLocal ? " ★" : "")}";
+                rows[i].color = isLocal ? new Color(0.55f, 0.9f, 1f) : Color.white;
 
                 var button = rows[i].GetComponent<Button>();
                 if (button == null)
@@ -91,6 +95,14 @@ namespace IslandHarvest.Game
                 return;
 
             visitWindow.ShowForPlayer(playerId);
+        }
+
+        private static string FormatEntryLabel(LeaderboardEntryData entry)
+        {
+            if (!string.IsNullOrEmpty(entry.displayName))
+                return entry.displayName;
+
+            return ShortPlayerId(entry.playerId);
         }
 
         private static string ShortPlayerId(string playerId)

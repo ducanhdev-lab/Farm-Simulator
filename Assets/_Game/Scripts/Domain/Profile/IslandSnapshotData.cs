@@ -6,6 +6,7 @@ namespace IslandHarvest.Game
     public class IslandSnapshotData
     {
         public string ownerPlayerId;
+        public string displayName;
         public int coins;
         public int unlockedIslandCount;
         public string equippedSkinId;

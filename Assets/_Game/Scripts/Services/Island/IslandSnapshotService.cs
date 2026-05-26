@@ -29,6 +29,7 @@ namespace IslandHarvest.Game
             return new IslandSnapshotData
             {
                 ownerPlayerId = ownerId,
+                displayName = profile.displayName,
                 coins = home.Coin,
                 unlockedIslandCount = unlocked,
                 equippedSkinId = home.equippedSkinId,

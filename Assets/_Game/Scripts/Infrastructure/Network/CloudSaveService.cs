@@ -232,14 +232,34 @@ namespace IslandHarvest.Game
             if (remote == null)
                 yield break;
 
-            var merged = ProfileMerger.Merge(localProfile, remote);
+            SaveConflictChoice choice = SaveConflictChoice.Merge;
+            yield return SaveConflictPrompt.WaitForChoice(localProfile, remote, c => choice = c);
+
             var profileService = PlayerProfileService.Instance;
-            profileService?.ReplaceProfile(merged);
+            PlayerProfile resolved = localProfile;
+
+            switch (choice)
+            {
+                case SaveConflictChoice.UseCloud:
+                    resolved = remote;
+                    break;
+
+                case SaveConflictChoice.UseLocal:
+                    resolved = localProfile;
+                    resolved.BumpSaveVersionAbove(remote.saveVersion);
+                    break;
+
+                default:
+                    resolved = ProfileMerger.Merge(localProfile, remote);
+                    break;
+            }
+
+            profileService?.ReplaceProfile(resolved);
             profileService?.SaveNow();
             IslandManager.Instance?.ReloadFromProfile();
 
-            Debug.Log("Cloud save conflict resolved via merge.");
-            yield return SyncProfileToCloud(merged, isRetry: true);
+            Debug.Log($"Cloud save conflict resolved: {choice}.");
+            yield return SyncProfileToCloud(resolved, isRetry: true);
         }
 
         public IEnumerator FetchProfile(Action<PlayerProfile> onComplete)

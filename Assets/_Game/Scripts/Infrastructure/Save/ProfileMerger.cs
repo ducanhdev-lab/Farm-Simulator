@@ -44,6 +44,7 @@ namespace IslandHarvest.Game
         private static PlayerProfile MergePreferRemote(PlayerProfile local, PlayerProfile remote)
         {
             var merged = CloneShell(remote);
+            merged.displayName = PickDisplayName(local, remote, preferRemote: true);
             merged.homeWorld = remote.homeWorld ?? local.homeWorld;
             merged.cosmetics = MergeCosmetics(local.cosmetics, remote.cosmetics, preferRemote: true);
             merged.eventInstances = MergeEventInstances(local.eventInstances, remote.eventInstances);
@@ -56,6 +57,7 @@ namespace IslandHarvest.Game
         private static PlayerProfile MergePreferLocal(PlayerProfile local, PlayerProfile remote)
         {
             var merged = CloneShell(local);
+            merged.displayName = PickDisplayName(local, remote, preferRemote: false);
             merged.homeWorld = local.homeWorld ?? remote.homeWorld;
             merged.cosmetics = MergeCosmetics(local.cosmetics, remote.cosmetics, preferRemote: false);
             merged.eventInstances = MergeEventInstances(local.eventInstances, remote.eventInstances);
@@ -69,10 +71,16 @@ namespace IslandHarvest.Game
             new PlayerProfile
             {
                 profileId = source.profileId,
+                displayName = source.displayName,
                 saveVersion = source.saveVersion,
                 lastSaveUtc = source.lastSaveUtc,
                 cosmetics = source.cosmetics
             };
+
+        private static string PickDisplayName(PlayerProfile local, PlayerProfile remote, bool preferRemote) =>
+            preferRemote
+                ? FirstNonEmpty(remote?.displayName, local?.displayName)
+                : FirstNonEmpty(local?.displayName, remote?.displayName);
 
         private static CosmeticsData MergeCosmetics(
             CosmeticsData local,

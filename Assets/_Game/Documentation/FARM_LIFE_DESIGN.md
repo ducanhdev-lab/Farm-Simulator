@@ -28,10 +28,10 @@ _Cập nhật tiến độ: 2026-05._
 
 ### Đang làm (ưu tiên tiếp theo)
 
-1. Chạy Editor: **Tools → Island Harvest → Setup Farm Life (All)** (gồm in-game leaderboard trên UIManager prefab).
-2. Bổ sung recipe/building content + gán `BiomeZone` trên Level01 theo vùng map (art/vùng thực tế).
-3. Phase 2: UI conflict save 409, leaderboard polish (refresh row, avatar).
-4. Phase 3: admin API/UI chỉnh `live_events` (starts_at / ends_at) — DB đã có, chưa CMS.
+1. **Editor (bạn làm sau):** xem [EDITOR_SETUP_GUIDE.md](EDITOR_SETUP_GUIDE.md) — `Setup Farm Life (All)`.
+2. Bổ sung biome/map art trên Level01 (gán `BiomeZone` theo vùng thực tế).
+3. Phase 2: avatar leaderboard, test conflict 409 trên 2 thiết bị.
+4. Phase 3: CMS admin UI (API dev `GET/PUT /dev/events` đã có).
 
 ### Chưa làm (theo roadmap dài hạn)
 
@@ -432,7 +432,7 @@ sequenceDiagram
 | Local `player_profile.json` | ✅ |
 | `PUT /player/save` + JWT | ✅ |
 | Merge 409 / startup cloud newer | ✅ |
-| Prompt UI khi conflict | ⬜ |
+| Prompt UI khi conflict | 🔶 |
 | Upload snapshot sau save | ✅ |
 
 ---

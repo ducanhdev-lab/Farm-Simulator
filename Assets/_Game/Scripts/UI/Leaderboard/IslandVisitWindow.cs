@@ -47,6 +47,9 @@ namespace IslandHarvest.Game
             }
 
             SetStatus(null);
+            if (titleLabel != null && !string.IsNullOrEmpty(snapshot.displayName))
+                titleLabel.text = snapshot.displayName;
+
             if (detailsLabel != null)
             {
                 detailsLabel.text =

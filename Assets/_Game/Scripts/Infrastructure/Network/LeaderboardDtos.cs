@@ -13,6 +13,7 @@ namespace IslandHarvest.Game
     {
         public int rank;
         public string playerId;
+        public string displayName;
         public int coins;
         public int saveVersion;
         public string updatedAt;
