@@ -9,14 +9,15 @@ namespace IslandHarvest.Game
 {
     public static class SaveSystem
     {
+        /// <summary>
+        /// Schema version for on-disk save structures (NOT the cloud save revision counter).
+        /// </summary>
         public const int CurrentSaveVersion = 2;
 
         public static void SaveData<T>(T data, string fileName)
         {
             if (data is GameData gameData)
                 gameData.saveVersion = CurrentSaveVersion;
-            else if (data is PlayerProfile profile)
-                profile.saveVersion = CurrentSaveVersion;
 
             string filePath = GetJsonPath(fileName);
             string json = JsonUtility.ToJson(data, prettyPrint: true);

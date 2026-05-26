@@ -17,7 +17,8 @@ namespace IslandHarvest.Game
         public PlayerProfile()
         {
             profileId = Guid.NewGuid().ToString("N");
-            saveVersion = SaveSystem.CurrentSaveVersion;
+            // Cloud save revision counter (must be monotonically increasing).
+            saveVersion = 1;
             lastSaveUtc = DateTime.UtcNow.ToString("o");
             cosmetics = new CosmeticsData();
             eventInstances = new List<EventInstanceData>();
@@ -31,7 +32,7 @@ namespace IslandHarvest.Game
         public void TouchSaveTimestamp()
         {
             lastSaveUtc = DateTime.UtcNow.ToString("o");
-            saveVersion = SaveSystem.CurrentSaveVersion;
+            saveVersion = Math.Max(saveVersion, 1) + 1;
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace IslandHarvest.Game
         /// </summary>
         public void BumpSaveVersionAbove(int minimumVersion)
         {
-            saveVersion = Math.Max(saveVersion, minimumVersion) + 1;
+            saveVersion = Math.Max(Math.Max(saveVersion, 1), minimumVersion) + 1;
             lastSaveUtc = DateTime.UtcNow.ToString("o");
         }
     }

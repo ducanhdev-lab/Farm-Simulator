@@ -213,7 +213,9 @@ namespace IslandHarvest.Game
             }
             else if (!result.Success)
             {
-                Debug.LogWarning($"Cloud save failed ({result.StatusCode}): {result.Error}");
+                Debug.LogWarning(
+                    $"Cloud save failed ({result.StatusCode}): {result.Error}. " +
+                    "Leaderboard may not show your coins until sync succeeds.");
             }
 
             isSyncing = false;
