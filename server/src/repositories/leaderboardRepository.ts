@@ -5,6 +5,7 @@ export interface LeaderboardRow {
   display_coins: number;
   save_version: number;
   updated_at: string;
+  display_name: string | null;
 }
 
 export async function upsertLeaderboardScore(
@@ -27,9 +28,14 @@ export async function upsertLeaderboardScore(
 export async function getTopCoinScores(limit: number): Promise<LeaderboardRow[]> {
   const capped = Math.min(Math.max(limit, 1), 100);
   const result = await pool.query<LeaderboardRow>(
-    `SELECT player_id, display_coins, save_version, updated_at
-     FROM leaderboard_scores
-     ORDER BY display_coins DESC, updated_at ASC
+    `SELECT ls.player_id, ls.display_coins, ls.save_version, ls.updated_at,
+            COALESCE(
+              NULLIF(p.profile_json->>'displayName', ''),
+              NULLIF(p.profile_json->>'display_name', '')
+            ) AS display_name
+     FROM leaderboard_scores ls
+     LEFT JOIN players p ON p.id = ls.player_id
+     ORDER BY ls.display_coins DESC, ls.updated_at ASC
      LIMIT $1`,
     [capped]
   );

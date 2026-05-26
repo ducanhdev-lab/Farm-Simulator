@@ -7,6 +7,7 @@ export async function getCoinLeaderboard(request, reply) {
         entries: rows.map((row, index) => ({
             rank: index + 1,
             playerId: row.player_id,
+            displayName: row.display_name ?? undefined,
             coins: row.display_coins,
             saveVersion: row.save_version,
             updatedAt: row.updated_at,

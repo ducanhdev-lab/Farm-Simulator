@@ -60,3 +60,10 @@ Invoke-RestMethod -Uri "http://localhost:3000/dev/seed-leaderboard" -Method POST
 Then open **RANK** in Unity (Main Menu or Level01). Demo player IDs start with `11111111-…`.
 
 Disable in production: `SEED_DEMO_LEADERBOARD=false`
+
+**Dev events (schedule):**
+
+```powershell
+Invoke-RestMethod http://localhost:3000/dev/events
+Invoke-RestMethod -Uri "http://localhost:3000/dev/events/event_coast" -Method PUT -ContentType "application/json" -Body '{"startsAt":"2026-06-01T00:00:00Z","endsAt":"2026-06-30T23:59:59Z","requiredHomeCoins":1500}'
+```
